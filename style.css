@@ -502,79 +502,6 @@ button, select, input{ touch-action: manipulation; }
   .pilha-direita::after { transform: translate(16px, 20px) rotate(4deg); }
 }
 
-/* =========================================================
-   FIX 2: LANDSCAPE (celular deitado) = caber em UMA tela (sem rolagem)
-========================================================= */
-@media (orientation: landscape) and (max-width: 900px){
-  html, body{
-    height: 100%;
-    overflow: hidden; /* sem rolagem no deitado */
-  }
-
-  .tabuleiro{
-    min-height: 100dvh;
-    height: 100dvh;
-    overflow: hidden;
-    padding: 8px 10px 10px;
-  }
-
-  .titulo{
-    font-size: 20px;
-    margin: 4px 0 4px;
-  }
-
-  .seletor{
-    margin-bottom: 4px;
-    gap: 8px 10px;
-    font-size: 13px;
-  }
-  .seletor select{
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-
-  #btnIniciar{
-    margin: 4px auto 6px;
-    padding: 8px 14px;
-    font-size: 14px;
-  }
-
-  .painel{
-    margin: 4px 0 6px;
-    gap: 14px;
-    font-size: 14px;
-  }
-
-  /* cartas menores para caber */
-  .area-cartas{
-    margin: 6px auto 6px;
-    grid-template-columns: 1fr 34px 1fr;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .pilha{
-    max-width: 30vw;   /* mais estreito no landscape */
-  }
-
-  .carta{
-    max-width: 30vw;
-  }
-
-  .multiplicador{
-    width: 34px;
-  }
-
-  .resposta-area{
-    margin: 6px 0 6px;
-    padding-bottom: 0;
-  }
-  .resposta-area input{
-    width: min(260px, 70vw);
-    padding: 10px 12px;
-    font-size: 16px;
-  }
-}
 
 /* =========================================================
    BLOCO MESTRE MOBILE: cartas sempre iguais + cabe em pé e deitado
@@ -781,6 +708,7 @@ button, select, input{ touch-action: manipulation; }
     overflow: visible !important;
   }
 }
+
 
 
 
