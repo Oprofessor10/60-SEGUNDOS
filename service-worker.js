@@ -1,4 +1,4 @@
-const CACHE_NAME = "60-segundos-v13";
+const CACHE_NAME = "60-segundos-v99"; // mudei alto pra forçar trocar
 
 const urlsToCache = [
   "./",
@@ -6,9 +6,10 @@ const urlsToCache = [
   "./estilo.css",
   "./script.js",
   "./manifest.json",
-  "./ícone-192.png",
-"./ícone-512.png",
-
+  "./icon-192.png",
+  "./icon-512.png",
+  "./frente_carta_borda_azul_transparente.png",
+  "./costa_carta_borda_azul_transparente.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -28,9 +29,10 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => response || fetch(event.request))
+    caches.match(event.request).then((res) => res || fetch(event.request))
   );
 });
+
 
 
 
