@@ -576,5 +576,118 @@ button, select, input{ touch-action: manipulation; }
   }
 }
 
+/* =========================================================
+   BLOCO MESTRE MOBILE: cartas sempre iguais + cabe em pé e deitado
+   (cole no FINAL do estilo.css)
+========================================================= */
+
+/* Cartas responsivas por variáveis */
+:root{
+  --cardW: 240px;   /* desktop padrão */
+  --xW: 90px;
+}
+
+/* Usa aspect-ratio pra nunca deformar */
+.carta{
+  width: var(--cardW) !important;
+  height: auto !important;
+  aspect-ratio: 3 / 4; /* carta em pé */
+}
+
+/* Grade usa as variáveis */
+.area-cartas{
+  grid-template-columns: var(--cardW) var(--xW) var(--cardW) !important;
+}
+
+/* X acompanha a altura da carta */
+.multiplicador{
+  width: var(--xW) !important;
+  height: auto !important;
+  align-self: center;
+}
+
+/* ======= FIX: “parece maior” por causa do monte (direita) ======= */
+/* No mobile, deixamos o monte quase invisível e sem empurrar visual */
+@media (max-width: 900px){
+  .pilha-direita::before,
+  .pilha-direita::after{
+    opacity: .12 !important;
+    filter: none !important;
+  }
+}
+
+/* =========================================================
+   MOBILE EM PÉ (RETRATO): 2 cartas lado a lado e cabendo
+========================================================= */
+@media (max-width: 900px) and (orientation: portrait){
+  :root{
+    --cardW: min(42vw, 180px);  /* duas cartas + X cabem */
+    --xW: min(14vw, 60px);
+  }
+
+  /* Permite rolar se precisar (mas normalmente vai caber) */
+  html, body{
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tabuleiro{
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow: visible !important;
+  }
+
+  /* Título e topo menores */
+  .titulo{ font-size: 26px !important; margin: 6px 0 8px !important; }
+  .painel{ font-size: 16px !important; gap: 16px !important; margin: 8px 0 8px !important; }
+  #btnIniciar{ padding: 10px 16px !important; font-size: 16px !important; }
+
+  /* Input grande e central */
+  .resposta-area input{
+    width: min(320px, 88vw) !important;
+    font-size: 18px !important;
+    padding: 12px 14px !important;
+  }
+}
+
+/* =========================================================
+   MOBILE DEITADO (LANDSCAPE): SEM TRAVAR O JOGO
+   -> Aqui a regra é: CABER NA TELA (sem cortar).
+   -> Se ainda faltar espaço, a gente permite rolagem leve.
+========================================================= */
+@media (max-width: 900px) and (orientation: landscape){
+  :root{
+    /* base pelo "altura" do celular (deitado altura é pequena) */
+    --cardW: min(26vh, 150px);
+    --xW: min(10vh, 44px);
+  }
+
+  /* NÃO travar totalmente: se algum celular for mais baixo, rola */
+  html, body{
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto; /* <- ESSENCIAL pra não cortar pela metade */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabuleiro{
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow: visible !important;
+    padding: 8px 10px 10px !important;
+  }
+
+  .titulo{ font-size: 20px !important; margin: 4px 0 4px !important; }
+  .seletor{ font-size: 13px !important; margin-bottom: 4px !important; }
+  .painel{ font-size: 13px !important; gap: 14px !important; margin: 4px 0 6px !important; }
+  #btnIniciar{ padding: 8px 14px !important; font-size: 14px !important; margin: 4px auto 6px !important; }
+
+  .resposta-area input{
+    width: min(280px, 70vw) !important;
+    font-size: 16px !important;
+    padding: 10px 12px !important;
+  }
+}
+
 
 
