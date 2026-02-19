@@ -762,5 +762,25 @@ button, select, input{ touch-action: manipulation; }
   }
 }
 
+/* ===== CORREÇÃO: teclado virtual sempre acima do canvas ===== */
+.keypad{
+  z-index: 6000 !important; /* acima do #fxCanvas (5000) */
+}
+
+/* ===== CORREÇÃO: no landscape NÃO travar rolagem / não cortar tela ===== */
+@media (max-width: 900px) and (orientation: landscape){
+  html, body{
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+
+  .tabuleiro{
+    height: auto !important;
+    min-height: 100svh !important;
+    overflow: visible !important;
+  }
+}
+
 
 
