@@ -3,7 +3,7 @@ const CACHE_NAME = "60-segundos-v100"; // mudei alto pra forçar trocar
 const urlsToCache = [
   "./",
   "./index.html",
-  "./estilo.css",
+  "./style.css",
   "./script.js",
   "./manifest.json",
   "./icon-192.png",
@@ -32,6 +32,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((res) => res || fetch(event.request))
   );
 });
+
 
 
 
