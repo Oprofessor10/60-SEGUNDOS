@@ -1,45 +1,48 @@
 /* =========================
-   BASE
+   RESET / BASE
 ========================= */
+*{ box-sizing: border-box; }
+
 html, body{
+  width: 100%;
   margin: 0;
   padding: 0;
-  width: 100%;
   overflow-x: hidden;
+}
+
+body{
   font-family: Arial, sans-serif;
   text-align: center;
-  color: white;
+  color: #fff;
   background: #0b0f14;
 }
 
-/* melhora toque no mobile */
-button, select, input{
-  touch-action: manipulation;
-}
+/* melhora toque no celular */
+button, select, input{ touch-action: manipulation; }
 
 /* utilitário */
-.hidden{ display:none; }
+.hidden{ display: none !important; }
 
 /* =========================
    TABULEIRO
 ========================= */
 .tabuleiro{
-  box-sizing: border-box;
+  position: relative;
   max-width: 1300px;
   width: 96%;
-  margin: 6px auto;
+  margin: 10px auto;
   padding: 18px 24px;
   border-radius: 26px;
-  position: relative;
+
   background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  overflow: hidden;
 
   display: flex;
   flex-direction: column;
 
-  /* Desktop: ocupa a tela */
-  min-height: calc(100vh - 12px);
-  overflow: hidden;
+  /* no mobile, vh “normal” corta. svh/dvh resolve melhor */
+  min-height: 100svh;
 }
 
 .tabuleiro::after{
@@ -56,7 +59,7 @@ button, select, input{
 .tabuleiro > *{ position: relative; z-index: 1; }
 
 /* =========================
-   TÍTULO
+   TÍTULO / TOPO
 ========================= */
 .titulo{
   font-size: 40px;
@@ -67,33 +70,27 @@ button, select, input{
     0 0 22px rgba(0,140,255,0.6);
 }
 
-/* =========================
-   SELETORES
-========================= */
 .seletor{
   margin-bottom: 6px;
   font-size: 18px;
 }
 .seletor select{
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 10px;
   border: none;
   outline: none;
 }
 
-/* =========================
-   BOTÃO
-========================= */
 #btnIniciar{
   display: block;
   width: fit-content;
-  margin: 4px auto 8px;
-  padding: 10px 20px;
+  margin: 6px auto 10px;
+  padding: 10px 22px;
   border-radius: 14px;
   border: none;
   cursor: pointer;
   background: linear-gradient(45deg, #00ff88, #00cc66);
-  font-weight: bold;
+  font-weight: 900;
   font-size: 18px;
   transition: transform 0.15s, box-shadow 0.15s;
 }
@@ -102,15 +99,12 @@ button, select, input{
   box-shadow: 0 0 16px rgba(0,255,136,0.55);
 }
 
-/* =========================
-   PAINEL
-========================= */
 .painel{
   display: flex;
   justify-content: center;
   gap: 30px;
   font-size: 20px;
-  margin: 10px 0 10px;
+  margin: 6px 0 12px;
 }
 
 /* =========================
@@ -126,59 +120,9 @@ button, select, input{
   align-items: center;
   justify-content: center;
   justify-items: center;
+
   gap: 20px;
-
-  background: transparent;
-  box-shadow: none;
 }
-
-/* =========================
-   CARTA
-========================= */
-.carta{
-  width: 240px;
-  height: 320px;
-  position: relative;
-  display: grid;
-  place-items: center;
-
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: transparent;
-
-  filter: drop-shadow(0 18px 28px rgba(0,0,0,0.6));
-  transition: transform .2s ease, filter .2s ease;
-
-  /* iguala o miolo */
-  background-size: 96% 96% !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-
-  box-sizing: border-box;
-}
-.carta:hover{
-  transform: translateY(-4px);
-  filter: drop-shadow(0 14px 22px rgba(0,0,0,0.55));
-}
-
-.carta.front{ background-image: url("frente_carta_borda_azul_transparente.png"); }
-.carta.back{  background-image: url("costa_carta_borda_azul_transparente.png"); }
-
-/* NÚMERO */
-.numero{
-  display: none;
-  position: absolute;
-  top: 47%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 150px;
-  font-weight: 900;
-  color: #000;
-  text-shadow: 4px 4px 0 rgba(255,255,255,0.7);
-  user-select: none;
-  pointer-events: none;
-}
-.carta.back .numero{ display: block; }
 
 /* =========================
    PILHAS
@@ -200,6 +144,15 @@ button, select, input{
   gap: 10px;
 }
 
+#pilhaEsquerda .pilha-topo{
+  justify-content: center;
+  padding-bottom: 12px;
+}
+#labelTabuada{
+  width: 100%;
+  text-align: center;
+}
+
 .pilha-label{
   font-size: 14px;
   font-weight: 900;
@@ -219,17 +172,57 @@ button, select, input{
   box-shadow: 0 10px 24px rgba(0,0,0,.25);
 }
 
-/* centraliza o topo da pilha esquerda */
-#pilhaEsquerda .pilha-topo{
-  justify-content: center;
-  padding-bottom: 12px;
-}
-#labelTabuada{
+.pilha-rodape{
   width: 100%;
-  text-align: center;
+  padding-top: 12px;
+}
+.pilha-mini{
+  font-size: 13px;
+  opacity: .85;
 }
 
-/* camadas do monte */
+/* =========================
+   CARTAS
+========================= */
+.carta{
+  width: 240px;
+  height: 320px;
+  position: relative;
+  display: grid;
+  place-items: center;
+
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 96% 96%;
+
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,0.6));
+  transition: transform .2s ease, filter .2s ease;
+}
+.carta:hover{
+  transform: translateY(-4px);
+  filter: drop-shadow(0 14px 22px rgba(0,0,0,0.55));
+}
+
+.carta.front{ background-image: url("frente_carta_borda_azul_transparente.png"); }
+.carta.back{  background-image: url("costa_carta_borda_azul_transparente.png"); }
+
+.numero{
+  display: none;
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 150px;
+  font-weight: 900;
+  color: #000;
+  text-shadow: 4px 4px 0 rgba(255,255,255,0.7);
+  user-select: none;
+  pointer-events: none;
+}
+.carta.back .numero{ display: block; }
+
+/* camadas do monte (direita) */
 .pilha-direita{ --stack: 20; }
 
 .pilha-direita::before,
@@ -246,23 +239,21 @@ button, select, input{
   filter: drop-shadow(0 18px 28px rgba(0,0,0,0.55));
   z-index: 0;
 }
-
 .pilha-direita::before{
   transform: translate(calc(6px + (min(var(--stack), 60) / 60) * 18px),
                       calc(8px + (min(var(--stack), 60) / 60) * 22px))
              rotate(2deg);
   opacity: .85;
 }
-
 .pilha-direita::after{
   transform: translate(calc(12px + (min(var(--stack), 60) / 60) * 26px),
                       calc(16px + (min(var(--stack), 60) / 60) * 32px))
              rotate(4deg);
   opacity: .55;
 }
-
 .pilha .carta{ z-index: 1; }
 
+/* Mensagem quando zerar */
 .pilha-zerou{
   position: absolute;
   inset: 78px 8px 58px 8px;
@@ -281,7 +272,7 @@ button, select, input{
 }
 
 /* =========================
-   X
+   X CENTRAL
 ========================= */
 .multiplicador{
   display: flex;
@@ -291,13 +282,9 @@ button, select, input{
   height: 320px;
   pointer-events: none;
 }
-.x-rabisco{
-  width: 80%;
-  height: 80%;
-  transform: rotate(-8deg);
-}
+.x-rabisco{ width: 80%; height: 80%; transform: rotate(-8deg); }
 .x-rabisco path{
-  stroke: #ffffff;
+  stroke: #fff;
   stroke-width: 12;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -313,8 +300,8 @@ button, select, input{
    INPUT
 ========================= */
 .resposta-area{
-  margin: 10px 0 8px;
-  padding-bottom: 6px;
+  margin: 10px 0 10px;
+  padding-bottom: 8px;
 }
 .resposta-area input{
   padding: 12px;
@@ -341,13 +328,13 @@ button, select, input{
   background: rgba(0,0,0,.25);
   border: 1px solid rgba(255,255,255,.10);
   backdrop-filter: blur(6px);
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 22px;
+  font-weight: 900;
 }
 .fim-jogo:empty{ display:none; }
 
 /* =========================
-   FX CANVAS
+   FX Canvas
 ========================= */
 #fxCanvas{
   position: fixed;
@@ -368,8 +355,8 @@ button, select, input{
   display: grid;
   place-items: center;
   background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
   z-index: 1000;
+  backdrop-filter: blur(8px);
 }
 .modal.hidden{ display: none; }
 
@@ -383,6 +370,7 @@ button, select, input{
   text-align: center;
   animation: surgirModal .25s ease;
 }
+
 @keyframes surgirModal{
   from{ transform: scale(.85); opacity: 0; }
   to{ transform: scale(1); opacity: 1; }
@@ -415,64 +403,68 @@ button, select, input{
 .btn-sec{ background: rgba(255,255,255,.12); color: #fff; }
 
 /* =========================
-   MOBILE (EM PÉ): 1 COLUNA + ROLAGEM
+   RESPONSIVO (MOBILE)
+   - Mantém 2 cartas + X
+   - Não corta: permite rolagem se precisar
 ========================= */
 @media (max-width: 900px){
-  /* libera rolagem no mobile (para não cortar) */
-  html, body{ overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
   .tabuleiro{
     width: 100%;
     max-width: 100%;
     margin: 0;
     border-radius: 18px;
-
-    /* NÃO trava altura no celular */
-    min-height: 100svh;
+    padding: 12px 12px 16px;
+    min-height: 100dvh;
     height: auto;
     overflow: visible;
-
-    padding: 14px 14px 18px;
   }
 
-  .titulo{ font-size: 30px; letter-spacing: 2px; }
+  .titulo{
+    font-size: 28px;
+    letter-spacing: 2px;
+    margin: 8px 0 10px;
+  }
 
   .seletor{
-    font-size: 16px;
+    font-size: 15px;
     display: flex;
     flex-wrap: wrap;
     gap: 10px 12px;
     justify-content: center;
     align-items: center;
   }
-  .seletor select{ padding: 10px 12px; font-size: 16px; }
+  .seletor select{ font-size: 16px; padding: 10px 12px; }
 
-  .painel{ gap: 18px; font-size: 18px; }
+  #btnIniciar{ font-size: 17px; padding: 12px 20px; }
 
-  /* vira 1 coluna */
+  .painel{ font-size: 18px; gap: 18px; }
+
+  /* aqui é o principal: 2 cartas + X cabendo */
   .area-cartas{
     width: 100%;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 48px 1fr;
     gap: 10px;
-    align-content: start;
-    padding-top: 6px;
+    margin: 10px auto 6px;
   }
 
   .pilha{
-    width: min(360px, 92vw);
+    width: 100%;
+    max-width: 42vw; /* cada lado ocupa ~42% */
   }
 
   .carta{
-    width: min(320px, 88vw);
-    height: calc(min(320px, 88vw) * 1.28);
+    width: 100%;
+    max-width: 42vw;
+    height: auto;
+    aspect-ratio: 3 / 4; /* mantém proporção de carta */
   }
 
-  .numero{ font-size: 110px; }
+  .numero{ font-size: clamp(64px, 18vw, 110px); }
 
   .multiplicador{
-    width: 42px;
-    height: 90px;
-    margin: -4px 0;
+    width: 48px;
+    height: auto;
+    aspect-ratio: 1 / 2;
   }
 
   .resposta-area input{
@@ -481,39 +473,15 @@ button, select, input{
     font-size: 18px;
     border-radius: 14px;
   }
-
-  .fim-jogo{
-    position: static;
-    transform: none;
-    margin: 10px auto 0;
-    width: min(520px, 92vw);
-    font-size: 18px;
-  }
 }
 
-/* =========================
-   LANDSCAPE (DEITADO): 2 COLUNAS COMPACTO + ROLAGEM
-========================= */
+/* Landscape: compacta mais ainda pra não cortar */
 @media (orientation: landscape) and (max-width: 900px){
   .titulo{ font-size: 22px; margin: 6px 0 6px; }
-
-  .area-cartas{
-    grid-template-columns: 160px 34px 160px;
-    gap: 6px;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .pilha{ width: 160px; }
-  .carta{ width: 160px; height: 220px; }
-  .numero{ font-size: 86px; }
-
-  .multiplicador{ width: 34px; height: 110px; }
-
-  .resposta-area input{
-    width: 220px;
-    font-size: 16px;
-    padding: 10px;
-  }
+  .painel{ font-size: 16px; margin: 6px 0 8px; }
+  #btnIniciar{ padding: 10px 16px; font-size: 14px; margin: 6px auto 8px; }
+  .area-cartas{ grid-template-columns: 1fr 38px 1fr; gap: 8px; }
+  .multiplicador{ width: 38px; }
+  .pilha-label{ font-size: 12px; }
+  .pilha-contador{ font-size: 14px; min-width: 46px; }
 }
-
