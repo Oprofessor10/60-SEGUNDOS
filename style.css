@@ -629,9 +629,85 @@ button, select, input{
   }
 }
 
-/* telas bem pequenas (tipo 360px) */
-@media (max-width: 420px){
-  .titulo{ font-size: 26px; }
-  .painel{ font-size: 16px; gap: 14px; }
-  .numero{ font-size: 96px; }
+
+
+/* =========================
+   MOBILE RESPONSIVO
+========================= */
+
+@media (max-width: 900px) {
+
+  .tabuleiro {
+    padding: 10px;
+    height: 100dvh;
+  }
+
+  .titulo {
+    font-size: 26px;
+    letter-spacing: 2px;
+  }
+
+  .seletor {
+    font-size: 14px;
+  }
+
+  #btnIniciar {
+    font-size: 14px;
+    padding: 8px 14px;
+  }
+
+  .painel {
+    font-size: 14px;
+    gap: 15px;
+  }
+
+  .area-cartas {
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 6px;
+  }
+
+  .carta {
+    width: 150px;
+    height: 210px;
+  }
+
+  .numero {
+    font-size: 80px;
+  }
+
+  .multiplicador {
+    height: 100px;
+  }
+
+  .resposta-area input {
+    width: 160px;
+    font-size: 16px;
+  }
+
+}
+
+@media (orientation: landscape) and (max-width: 900px) {
+
+  .tabuleiro {
+    justify-content: flex-start;
+  }
+
+  .titulo {
+    font-size: 22px;
+    margin-bottom: 5px;
+  }
+
+  .area-cartas {
+    align-content: center;
+  }
+
+  .carta {
+    width: 140px;
+    height: 190px;
+  }
+
+  .numero {
+    font-size: 70px;
+  }
+
 }
