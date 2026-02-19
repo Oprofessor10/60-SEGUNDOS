@@ -706,7 +706,7 @@ document.addEventListener("keydown", (e) => {
 // =======================
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js")
+    navigator.serviceWorker.register("service-worker.js?v=5")
       .then(() => console.log("PWA ativado"))
       .catch(err => console.log("Erro PWA:", err));
   });
@@ -820,6 +820,7 @@ if (keypad) {
 // liga/desliga quando gira a tela
 window.addEventListener("resize", ensureMobileInputMode);
 ensureMobileInputMode();
+
 
 
 
