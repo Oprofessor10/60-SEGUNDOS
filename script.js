@@ -711,6 +711,105 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// =======================
+// TECLADO VIRTUAL (MOBILE)
+// =======================
+const keypad = document.getElementById("keypad");
+
+function isMobileCoarse() {
+  return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+}
+
+function showKeypad() {
+  if (!keypad) return;
+  keypad.classList.remove("hidden");
+  keypad.setAttribute("aria-hidden", "false");
+}
+
+function hideKeypad() {
+  if (!keypad) return;
+  keypad.classList.add("hidden");
+  keypad.setAttribute("aria-hidden", "true");
+}
+
+function ensureMobileInputMode() {
+  if (!respostaInput) return;
+
+  if (isMobileCoarse()) {
+    // trava teclado do celular
+    respostaInput.setAttribute("readonly", "readonly");
+    // e garante que o teclado virtual aparece
+    showKeypad();
+
+    // se o usuário tentar focar, a gente impede o teclado nativo
+    respostaInput.addEventListener("focus", () => {
+      respostaInput.blur();
+      showKeypad();
+    });
+  } else {
+    // desktop normal
+    respostaInput.removeAttribute("readonly");
+    hideKeypad();
+  }
+}
+
+function keypadAppend(d) {
+  if (!respostaInput) return;
+  const s = (respostaInput.value || "").toString();
+
+  // evita números gigantes (ajuste se quiser)
+  if (s.length >= 4) return;
+
+  // evita "000..."
+  if (s === "0") respostaInput.value = String(d);
+  else respostaInput.value = s + String(d);
+}
+
+function keypadBackspace() {
+  if (!respostaInput) return;
+  const s = (respostaInput.value || "").toString();
+  respostaInput.value = s.slice(0, -1);
+}
+
+function keypadClear() {
+  if (!respostaInput) return;
+  respostaInput.value = "";
+}
+
+// OK do teclado virtual:
+// - se modal aberto -> SIM
+// - senão -> verifica resposta
+function keypadOk() {
+  if (aguardandoDecisao) {
+    confirmarSim();
+    return;
+  }
+  verificar();
+}
+
+// Clique nos botões
+if (keypad) {
+  keypad.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const k = btn.getAttribute("data-k");
+    if (!k) return;
+
+    // mantém o foco "lógico" no jogo
+    if (respostaInput) respostaInput.blur();
+
+    if (k === "back") return keypadBackspace();
+    if (k === "clear") return keypadClear();
+    if (k === "ok") return keypadOk();
+    keypadAppend(k);
+  });
+}
+
+// liga/desliga quando gira a tela
+window.addEventListener("resize", ensureMobileInputMode);
+ensureMobileInputMode();
+
 
 
 
