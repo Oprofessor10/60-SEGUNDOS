@@ -788,42 +788,6 @@ function verificar() {
 }
 
 // =======================
-// TECLADO (ENTER/ESC) - ÚNICO LISTENER
-// =======================
-document.addEventListener("keydown", (e) => {
-  // Modal aberto: ENTER=SIM | ESC=NÃO
-  if (aguardandoDecisao) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      confirmarSim();
-      return;
-    }
-    if (e.key === "Escape") {
-      e.preventDefault();
-      confirmarNao();
-      return;
-    }
-    return;
-  }
-
-  // Enter: iniciar (se precisar) e enviar resposta
-  if (e.key === "Enter") {
-    e.preventDefault();
-    if (!respostaInput) return;
-
-    const digitado = respostaInput.value;
-
-    // se o jogo ainda não começou, inicia e preserva o que foi digitado
-    if (!jogoAtivo) {
-      window.iniciarJogo(true);
-      respostaInput.value = digitado;
-    }
-
-    verificar();
-  }
-});
-
-// =======================
 // PWA REGISTRO
 // =======================
 if ("serviceWorker" in navigator) {
@@ -833,6 +797,58 @@ if ("serviceWorker" in navigator) {
       .catch(err => console.log("Erro PWA:", err));
   });
 }
+
+// =======================
+// ENTER GARANTIDO (desktop)
+// =======================
+function isEnterKey(e){
+  return (
+    e.key === "Enter" ||
+    e.code === "Enter" ||
+    e.code === "NumpadEnter" ||
+    e.keyCode === 13
+  );
+}
+
+// Enter dentro do input SEMPRE envia
+if (respostaInput) {
+  respostaInput.addEventListener("keydown", (e) => {
+    if (!isEnterKey(e)) return;
+    e.preventDefault();
+
+    // se ainda não iniciou, inicia e preserva o digitado
+    const digitado = respostaInput.value;
+    if (!jogoAtivo) {
+      window.iniciarJogo(true);
+      respostaInput.value = digitado;
+    }
+
+    verificar();
+  }, { passive: false });
+}
+
+// Enter global (se o foco não estiver no input)
+document.addEventListener("keydown", (e) => {
+  if (aguardandoDecisao) return; // seu modal já trata Enter/Esc
+
+  if (!isEnterKey(e)) return;
+  e.preventDefault();
+
+  if (!respostaInput) return;
+
+  // se o foco não estiver no input, força foco
+  if (document.activeElement !== respostaInput) {
+    respostaInput.focus();
+  }
+
+  const digitado = respostaInput.value;
+  if (!jogoAtivo) {
+    window.iniciarJogo(true);
+    respostaInput.value = digitado;
+  }
+
+  verificar();
+}, { passive: false });
 
 
 
