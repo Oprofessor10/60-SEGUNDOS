@@ -828,11 +828,12 @@ document.addEventListener("keydown", (e) => {
 // =======================
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js?v=2")
+    navigator.serviceWorker.register("service-worker.js");
       .then(() => console.log("PWA ativado"))
       .catch(err => console.log("Erro PWA:", err));
   });
 }
+
 
 
 
