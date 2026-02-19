@@ -100,49 +100,36 @@ function ensureMobileInputMode() {
   if (!respostaInput) return;
 
   if (isMobileLike()) {
-    // No celular, impedir teclado nativo
-    respostaInput.setAttribute("readonly", "readonly");
+    // BLOQUEIA teclado nativo em qualquer Android/webview (WhatsApp etc.)
+    respostaInput.disabled = true;              // <- chave do sucesso
     respostaInput.setAttribute("inputmode", "none");
     respostaInput.setAttribute("autocomplete", "off");
-
-    // Em Android, type number força teclado. No mobile, garante text.
     if (respostaInput.type !== "text") respostaInput.type = "text";
 
     showKeypad();
 
     if (!inputHooks) {
-      // Se tentar focar, desfoca e mostra keypad
-      respostaInput.addEventListener("focus", () => {
-        respostaInput.blur();
-        showKeypad();
-      });
-
-      // Toque/click no input: não abre teclado nativo
-      respostaInput.addEventListener("pointerdown", (e) => {
+      // toque no input só abre o keypad (não abre teclado nativo)
+      const block = (e) => {
         e.preventDefault();
-        respostaInput.blur();
+        e.stopPropagation();
         showKeypad();
-      });
-
-      // fallback para navegadores sem pointerdown confiável
-      respostaInput.addEventListener("touchstart", (e) => {
-        e.preventDefault();
-        respostaInput.blur();
-        showKeypad();
-      }, { passive: false });
+      };
+      respostaInput.addEventListener("touchstart", block, { passive: false });
+      respostaInput.addEventListener("click", block);
 
       inputHooks = true;
     }
-
-    respostaInput.blur();
   } else {
     // Desktop normal
+    respostaInput.disabled = false;
     respostaInput.removeAttribute("readonly");
     respostaInput.setAttribute("inputmode", "numeric");
     if (respostaInput.type !== "number") respostaInput.type = "number";
     hideKeypad();
   }
 }
+
 
 // Digitação pelo keypad
 function keypadAppend(d) {
@@ -846,6 +833,7 @@ if ("serviceWorker" in navigator) {
       .catch(err => console.log("Erro PWA:", err));
   });
 }
+
 
 
 
