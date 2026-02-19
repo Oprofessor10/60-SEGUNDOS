@@ -6,10 +6,7 @@
   <title>60 SEGUNDOS</title>
   <link rel="stylesheet" href="./estilo.css?v=5" />
   <link rel="manifest" href="manifest.json?v=2">
-<meta name="theme-color" content="#0f2e35">
-
-  
-
+  <meta name="theme-color" content="#0f2e35">
 </head>
 <body>
 
@@ -49,12 +46,8 @@
       <div>❌ <span id="erros">0</span></div>
     </div>
 
-    <!-- =========================
-         ÁREA DAS CARTAS (COM PILHAS)
-         ========================= -->
     <div class="area-cartas">
 
-      <!-- PILHA ESQUERDA (mostra 1 carta / pergunta atual) -->
       <div class="pilha pilha-esquerda" id="pilhaEsquerda">
         <div class="pilha-topo">
           <div class="pilha-label" id="labelTabuada"></div>
@@ -69,7 +62,6 @@
         </div>
       </div>
 
-      <!-- X rabisco -->
       <div class="multiplicador" aria-hidden="true">
         <svg class="x-rabisco" viewBox="0 0 120 120" role="img" focusable="false">
           <path d="M18 20 C35 35, 50 55, 62 64 C78 78, 92 98, 103 108
@@ -81,7 +73,6 @@
         </svg>
       </div>
 
-      <!-- PILHA DIREITA (quantidade conforme nível e vai sumindo) -->
       <div class="pilha pilha-direita" id="pilhaDireita" style="--stack: 20;">
         <div class="pilha-topo">
           <div class="pilha-label">Cartas restantes</div>
@@ -92,7 +83,6 @@
           <div class="numero" id="numDireita"></div>
         </div>
 
-        <!-- quando zerar, o JS vai mostrar essa mensagem -->
         <div class="pilha-zerou hidden" id="pilhaZerouMsg">
           ✅ Você passou de nível!
         </div>
@@ -106,7 +96,7 @@
         id="respostaInput"
         placeholder="Digite a resposta"
         autocomplete="off"
-        inputmode="numeric"
+        inputmode="none"
         enterkeyhint="done"
       />
     </div>
@@ -115,12 +105,8 @@
 
   </div>
 
-  
-
-  <!-- EFEITO (fogos/confete) -->
   <canvas id="fxCanvas"></canvas>
 
-  <!-- MODAL DE DESAFIO -->
   <div id="modal" class="modal hidden">
     <div class="modal-box">
       <div id="modalTitulo" class="modal-titulo">Pronto?</div>
@@ -133,35 +119,36 @@
     </div>
   </div>
 
-  <!-- TECLADO VIRTUAL (mobile) -->
-<div id="keypad" class="keypad hidden" aria-hidden="true">
-  <div class="keypad-row">
-    <button class="kp" data-k="7">7</button>
-    <button class="kp" data-k="8">8</button>
-    <button class="kp" data-k="9">9</button>
-    <button class="kp kp-fn" data-k="back">⌫</button>
+  <div id="keypad" class="keypad hidden" aria-hidden="true">
+    <div class="keypad-row">
+      <button class="kp" data-k="7">7</button>
+      <button class="kp" data-k="8">8</button>
+      <button class="kp" data-k="9">9</button>
+      <button class="kp kp-fn" data-k="back">⌫</button>
+    </div>
+    <div class="keypad-row">
+      <button class="kp" data-k="4">4</button>
+      <button class="kp" data-k="5">5</button>
+      <button class="kp" data-k="6">6</button>
+      <button class="kp kp-fn" data-k="clear">C</button>
+    </div>
+    <div class="keypad-row">
+      <button class="kp" data-k="1">1</button>
+      <button class="kp" data-k="2">2</button>
+      <button class="kp" data-k="3">3</button>
+      <button class="kp kp-ok" data-k="ok">OK</button>
+    </div>
+    <div class="keypad-row">
+      <button class="kp kp-wide" data-k="0">0</button>
+    </div>
   </div>
-  <div class="keypad-row">
-    <button class="kp" data-k="4">4</button>
-    <button class="kp" data-k="5">5</button>
-    <button class="kp" data-k="6">6</button>
-    <button class="kp kp-fn" data-k="clear">C</button>
-  </div>
-  <div class="keypad-row">
-    <button class="kp" data-k="1">1</button>
-    <button class="kp" data-k="2">2</button>
-    <button class="kp" data-k="3">3</button>
-    <button class="kp kp-ok" data-k="ok">OK</button>
-  </div>
-  <div class="keypad-row">
-    <button class="kp kp-wide" data-k="0">0</button>
-  </div>
-</div>
 
   <script src="script.js?v=5"></script>
 
 </body>
 </html>
+
+
 
 
 
