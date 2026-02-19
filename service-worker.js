@@ -6,8 +6,9 @@ const urlsToCache = [
   "./estilo.css",
   "./script.js",
   "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png"
+  "./ícone-192.png",
+"./ícone-512.png",
+
 ];
 
 self.addEventListener("install", (event) => {
@@ -30,5 +31,6 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((response) => response || fetch(event.request))
   );
 });
+
 
 
