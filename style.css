@@ -708,6 +708,14 @@ button, select, input{ touch-action: manipulation; }
     overflow: visible !important;
   }
 }
+/* mantém o visual do input mesmo desabilitado no celular */
+#respostaInput:disabled{
+  opacity: 1;
+  -webkit-text-fill-color: #000;
+  color: #000;
+}
+
+
 
 
 
