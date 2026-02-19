@@ -718,8 +718,12 @@ if ("serviceWorker" in navigator) {
 const keypad = document.getElementById("keypad");
 
 function isMobileCoarse() {
-  return window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+  const byWidth = window.innerWidth <= 900;
+  return byPointer || byTouch || byWidth;
 }
+
 
 function showKeypad() {
   if (!keypad) return;
@@ -816,6 +820,7 @@ if (keypad) {
 // liga/desliga quando gira a tela
 window.addEventListener("resize", ensureMobileInputMode);
 ensureMobileInputMode();
+
 
 
 
