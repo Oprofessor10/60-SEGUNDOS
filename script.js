@@ -744,25 +744,45 @@ function ensureMobileInputMode() {
   if (!respostaInput) return;
 
   if (isMobileCoarse()) {
-    // trava teclado do celular
+    // 1) trava o teclado do celular de verdade
     respostaInput.setAttribute("readonly", "readonly");
-    // e garante que o teclado virtual aparece
+    respostaInput.setAttribute("inputmode", "none");  // impede teclado nativo
+    respostaInput.setAttribute("autocomplete", "off");
+
+    // IMPORTANTÍSSIMO: type number em alguns celulares abre teclado mesmo readonly
+    if (respostaInput.type !== "text") respostaInput.type = "text";
+
+    // 2) mostra o teclado virtual
     showKeypad();
 
-    // se o usuário tentar focar, a gente impede o teclado nativo
+    // 3) se tentar focar, não deixa abrir teclado nativo
     if (!inputFocusHooked) {
       respostaInput.addEventListener("focus", () => {
         respostaInput.blur();
         showKeypad();
       });
+
+      // toque no input: não abre teclado nativo, só abre o keypad
+      respostaInput.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        respostaInput.blur();
+        showKeypad();
+      });
+
       inputFocusHooked = true;
     }
+
+    // garante que não fica “focado” ao girar a tela
+    respostaInput.blur();
   } else {
     // desktop normal
     respostaInput.removeAttribute("readonly");
+    respostaInput.setAttribute("inputmode", "numeric");
+    if (respostaInput.type !== "number") respostaInput.type = "number";
     hideKeypad();
   }
 }
+
 
 function keypadAppend(d) {
   if (!respostaInput) return;
@@ -820,6 +840,7 @@ if (keypad) {
 // liga/desliga quando gira a tela
 window.addEventListener("resize", ensureMobileInputMode);
 ensureMobileInputMode();
+
 
 
 
