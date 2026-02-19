@@ -810,6 +810,45 @@ if (keypad) {
 window.addEventListener("resize", ensureMobileInputMode);
 ensureMobileInputMode();
 
+// ====== FORÇAR TECLADO VIRTUAL NO CELULAR ======
+const keypad = document.getElementById("keypad");
+
+function isMobileLike() {
+  const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+  const byWidth = window.innerWidth <= 900;
+  return byPointer || byTouch || byWidth;
+}
+
+function showKeypad() {
+  if (!keypad) return;
+  keypad.classList.remove("hidden");
+  keypad.style.display = "block";
+}
+
+function hideKeypad() {
+  if (!keypad) return;
+  keypad.classList.add("hidden");
+  keypad.style.display = "";
+}
+
+function applyMobileKeyboardMode() {
+  if (!respostaInput) return;
+
+  if (isMobileLike()) {
+    respostaInput.setAttribute("readonly", "readonly");
+    showKeypad();
+    respostaInput.addEventListener("focus", () => respostaInput.blur());
+  } else {
+    respostaInput.removeAttribute("readonly");
+    hideKeypad();
+  }
+}
+
+window.addEventListener("resize", applyMobileKeyboardMode);
+applyMobileKeyboardMode();
+
+
 
 
 
