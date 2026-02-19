@@ -1,4 +1,4 @@
-const CACHE_NAME = "60-segundos-v7";
+const CACHE_NAME = "60-segundos-v13";
 
 const urlsToCache = [
   "./",
@@ -31,6 +31,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((response) => response || fetch(event.request))
   );
 });
+
 
 
 
