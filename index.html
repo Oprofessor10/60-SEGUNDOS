@@ -106,6 +106,8 @@
         id="respostaInput"
         placeholder="Digite a resposta"
         autocomplete="off"
+        inputmode="numeric"
+        enterkeyhint="done"
       />
     </div>
 
@@ -131,9 +133,35 @@
     </div>
   </div>
 
+  <!-- TECLADO VIRTUAL (mobile) -->
+<div id="keypad" class="keypad hidden" aria-hidden="true">
+  <div class="keypad-row">
+    <button class="kp" data-k="7">7</button>
+    <button class="kp" data-k="8">8</button>
+    <button class="kp" data-k="9">9</button>
+    <button class="kp kp-fn" data-k="back">⌫</button>
+  </div>
+  <div class="keypad-row">
+    <button class="kp" data-k="4">4</button>
+    <button class="kp" data-k="5">5</button>
+    <button class="kp" data-k="6">6</button>
+    <button class="kp kp-fn" data-k="clear">C</button>
+  </div>
+  <div class="keypad-row">
+    <button class="kp" data-k="1">1</button>
+    <button class="kp" data-k="2">2</button>
+    <button class="kp" data-k="3">3</button>
+    <button class="kp kp-ok" data-k="ok">OK</button>
+  </div>
+  <div class="keypad-row">
+    <button class="kp kp-wide" data-k="0">0</button>
+  </div>
+</div>
+
   <script src="script.js"></script>
 
 </body>
 </html>
+
 
 
