@@ -56,6 +56,146 @@ const fxCanvas = document.getElementById("fxCanvas");
 const fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
 
 // =======================
+// TECLADO VIRTUAL (MOBILE)
+// =======================
+const keypad = document.getElementById("keypad");
+
+function isMobileLike() {
+  const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+  const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
+  const byWidth = window.innerWidth <= 900;
+  return byPointer || byTouch || byWidth;
+}
+
+function showKeypad() {
+  if (!keypad) return;
+  keypad.classList.remove("hidden");
+  keypad.setAttribute("aria-hidden", "false");
+}
+
+function hideKeypad() {
+  if (!keypad) return;
+  keypad.classList.add("hidden");
+  keypad.setAttribute("aria-hidden", "true");
+}
+
+// Foco seguro:
+// - No celular: NÃO focar input (senão abre teclado nativo), só mostra keypad
+// - No desktop: foca normal
+function focusRespostaSeguro() {
+  if (!respostaInput) return;
+
+  if (isMobileLike()) {
+    respostaInput.blur();
+    showKeypad();
+  } else {
+    respostaInput.focus();
+  }
+}
+
+// evita adicionar listeners repetidos
+let inputHooks = false;
+
+function ensureMobileInputMode() {
+  if (!respostaInput) return;
+
+  if (isMobileLike()) {
+    // No celular, impedir teclado nativo
+    respostaInput.setAttribute("readonly", "readonly");
+    respostaInput.setAttribute("inputmode", "none");
+    respostaInput.setAttribute("autocomplete", "off");
+
+    // Em Android, type number força teclado. No mobile, garante text.
+    if (respostaInput.type !== "text") respostaInput.type = "text";
+
+    showKeypad();
+
+    if (!inputHooks) {
+      // Se tentar focar, desfoca e mostra keypad
+      respostaInput.addEventListener("focus", () => {
+        respostaInput.blur();
+        showKeypad();
+      });
+
+      // Toque/click no input: não abre teclado nativo
+      respostaInput.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
+        respostaInput.blur();
+        showKeypad();
+      });
+
+      // fallback para navegadores sem pointerdown confiável
+      respostaInput.addEventListener("touchstart", (e) => {
+        e.preventDefault();
+        respostaInput.blur();
+        showKeypad();
+      }, { passive: false });
+
+      inputHooks = true;
+    }
+
+    respostaInput.blur();
+  } else {
+    // Desktop normal
+    respostaInput.removeAttribute("readonly");
+    respostaInput.setAttribute("inputmode", "numeric");
+    if (respostaInput.type !== "number") respostaInput.type = "number";
+    hideKeypad();
+  }
+}
+
+// Digitação pelo keypad
+function keypadAppend(d) {
+  if (!respostaInput) return;
+  const s = (respostaInput.value || "").toString();
+
+  // evita números gigantes
+  if (s.length >= 4) return;
+
+  if (s === "0") respostaInput.value = String(d);
+  else respostaInput.value = s + String(d);
+}
+
+function keypadBackspace() {
+  if (!respostaInput) return;
+  const s = (respostaInput.value || "").toString();
+  respostaInput.value = s.slice(0, -1);
+}
+
+function keypadClear() {
+  if (!respostaInput) return;
+  respostaInput.value = "";
+}
+
+function keypadOk() {
+  if (aguardandoDecisao) {
+    confirmarSim();
+    return;
+  }
+  verificar();
+}
+
+if (keypad) {
+  keypad.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const k = btn.getAttribute("data-k");
+    if (!k) return;
+
+    if (respostaInput) respostaInput.blur();
+
+    if (k === "back") return keypadBackspace();
+    if (k === "clear") return keypadClear();
+    if (k === "ok") return keypadOk();
+    keypadAppend(k);
+  });
+}
+
+window.addEventListener("resize", ensureMobileInputMode);
+ensureMobileInputMode();
+
+// =======================
 // CARTAS
 // =======================
 function virarParaFrente(carta) {
@@ -176,6 +316,8 @@ function resetTudoParaInicio() {
     respostaInput.value = "";
     respostaInput.blur();
   }
+
+  ensureMobileInputMode();
 }
 
 // =======================
@@ -454,7 +596,7 @@ if (tabuadaSelect) {
     virarParaVersoComNumero(cartaEsquerda, numEsquerda, tabuada);
     virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
 
-    if (respostaInput) respostaInput.focus();
+    focusRespostaSeguro();
   });
 }
 
@@ -490,7 +632,7 @@ window.iniciarJogo = function iniciarJogo(preservarDigitado = false) {
 
   if (respostaInput) {
     if (!preservarDigitado) respostaInput.value = "";
-    respostaInput.focus();
+    focusRespostaSeguro();
   }
 };
 
@@ -527,7 +669,7 @@ function iniciarDesafioAleatorio() {
 
   if (respostaInput) {
     respostaInput.value = "";
-    respostaInput.focus();
+    focusRespostaSeguro();
   }
 }
 
@@ -589,7 +731,7 @@ function avancarParaProximaTabuadaOuFase() {
 
   if (respostaInput) {
     respostaInput.value = "";
-    respostaInput.focus();
+    focusRespostaSeguro();
   }
 }
 
@@ -655,7 +797,7 @@ function verificar() {
 
   proximoNumero();
   virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
-  respostaInput.focus();
+  focusRespostaSeguro();
 }
 
 // =======================
@@ -680,23 +822,16 @@ document.addEventListener("keydown", (e) => {
   // Enter: iniciar (se precisar) e enviar resposta
   if (e.key === "Enter") {
     e.preventDefault();
-
     if (!respostaInput) return;
-
-    // garante foco no input
-    if (document.activeElement !== respostaInput) {
-      respostaInput.focus();
-    }
 
     const digitado = respostaInput.value;
 
-    // ✅ se o jogo ainda não começou, inicia e preserva o que foi digitado
+    // se o jogo ainda não começou, inicia e preserva o que foi digitado
     if (!jogoAtivo) {
       window.iniciarJogo(true);
       respostaInput.value = digitado;
     }
 
-    // envia resposta (se tiver)
     verificar();
   }
 });
@@ -712,135 +847,7 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// =======================
-// TECLADO VIRTUAL (MOBILE)
-// =======================
-const keypad = document.getElementById("keypad");
 
-function isMobileCoarse() {
-  const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-  const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-  const byWidth = window.innerWidth <= 900;
-  return byPointer || byTouch || byWidth;
-}
-
-
-function showKeypad() {
-  if (!keypad) return;
-  keypad.classList.remove("hidden");
-  keypad.setAttribute("aria-hidden", "false");
-}
-
-function hideKeypad() {
-  if (!keypad) return;
-  keypad.classList.add("hidden");
-  keypad.setAttribute("aria-hidden", "true");
-}
-
-// evita adicionar o mesmo listener várias vezes (em cada resize)
-let inputFocusHooked = false;
-
-function ensureMobileInputMode() {
-  if (!respostaInput) return;
-
-  if (isMobileCoarse()) {
-    // trava teclado do celular
-    respostaInput.setAttribute("readonly", "readonly");
-    respostaInput.setAttribute("inputmode", "none");
-    respostaInput.setAttribute("autocomplete", "off");
-
-    // força text no mobile para não abrir teclado numérico
-    if (respostaInput.type !== "text") respostaInput.type = "text";
-
-    // mostra teclado virtual
-    showKeypad();
-
-    if (!inputFocusHooked) {
-      respostaInput.addEventListener("focus", () => {
-        respostaInput.blur();
-        showKeypad();
-      });
-
-      respostaInput.addEventListener("pointerdown", (e) => {
-        e.preventDefault();
-        respostaInput.blur();
-        showKeypad();
-      });
-
-      inputFocusHooked = true;
-    }
-
-    respostaInput.blur();
-  } else {
-    // desktop normal
-    respostaInput.removeAttribute("readonly");
-    respostaInput.setAttribute("inputmode", "numeric");
-
-    // volta o type para number no desktop
-    if (respostaInput.type !== "number") respostaInput.type = "number";
-
-    hideKeypad();
-  }
-}
-
-
-
-function keypadAppend(d) {
-  if (!respostaInput) return;
-  const s = (respostaInput.value || "").toString();
-
-  // evita números gigantes (ajuste se quiser)
-  if (s.length >= 4) return;
-
-  // evita "000..."
-  if (s === "0") respostaInput.value = String(d);
-  else respostaInput.value = s + String(d);
-}
-
-function keypadBackspace() {
-  if (!respostaInput) return;
-  const s = (respostaInput.value || "").toString();
-  respostaInput.value = s.slice(0, -1);
-}
-
-function keypadClear() {
-  if (!respostaInput) return;
-  respostaInput.value = "";
-}
-
-// OK do teclado virtual:
-// - se modal aberto -> SIM
-// - senão -> verifica resposta
-function keypadOk() {
-  if (aguardandoDecisao) {
-    confirmarSim();
-    return;
-  }
-  verificar();
-}
-
-// Clique nos botões
-if (keypad) {
-  keypad.addEventListener("click", (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-
-    const k = btn.getAttribute("data-k");
-    if (!k) return;
-
-    // mantém o foco "lógico" no jogo
-    if (respostaInput) respostaInput.blur();
-
-    if (k === "back") return keypadBackspace();
-    if (k === "clear") return keypadClear();
-    if (k === "ok") return keypadOk();
-    keypadAppend(k);
-  });
-}
-
-// liga/desliga quando gira a tela
-window.addEventListener("resize", ensureMobileInputMode);
-ensureMobileInputMode();
 
 
 
