@@ -60,11 +60,17 @@ const fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
 // =======================
 const keypad = document.getElementById("keypad");
 
+/**
+ * CORREÇÃO:
+ * Antes você usava "largura <= 900" para decidir mobile, isso desativava teclado no PC
+ * quando a janela ficava menor, e o ENTER parava.
+ *
+ * Agora: mobile só se for touch/coarse pointer.
+ */
 function isMobileLike() {
   const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
-  const byWidth = window.innerWidth <= 900;
-  return byPointer || byTouch || byWidth;
+  return byPointer || byTouch;
 }
 
 function showKeypad() {
@@ -100,8 +106,8 @@ function ensureMobileInputMode() {
   if (!respostaInput) return;
 
   if (isMobileLike()) {
-    // BLOQUEIA teclado nativo em qualquer Android/webview (WhatsApp etc.)
-    respostaInput.disabled = true;              // <- chave do sucesso
+    // BLOQUEIA teclado nativo
+    respostaInput.disabled = true;
     respostaInput.setAttribute("inputmode", "none");
     respostaInput.setAttribute("autocomplete", "off");
     if (respostaInput.type !== "text") respostaInput.type = "text";
@@ -208,7 +214,10 @@ function atualizarLabelTabuada() {
     labelTabuada.textContent = "";
     return;
   }
-  labelTabuada.textContent = `Tabuada do ${tabuada}`;
+
+  // CORREÇÃO: garante que o label reflete o valor selecionado
+  const t = Number(v);
+  labelTabuada.textContent = `Tabuada do ${t}`;
 }
 
 // =======================
@@ -395,6 +404,24 @@ if (btnNao) btnNao.addEventListener("click", (e) => {
   e.preventDefault();
   confirmarNao();
 });
+
+// CORREÇÃO: teclado físico no modal (ENTER = sim / ESC = não)
+document.addEventListener("keydown", (e) => {
+  if (!aguardandoDecisao) return;
+
+  // Enter
+  if (e.key === "Enter" || e.code === "Enter" || e.code === "NumpadEnter" || e.keyCode === 13) {
+    e.preventDefault();
+    confirmarSim();
+    return;
+  }
+
+  // Esc
+  if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
+    e.preventDefault();
+    confirmarNao();
+  }
+}, { passive: false });
 
 // =======================
 // SOM
@@ -792,7 +819,8 @@ function verificar() {
 // =======================
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("service-worker.js");
+    // CORREÇÃO: removeu o ';' que quebrava o .then()
+    navigator.serviceWorker.register("./service-worker.js")
       .then(() => console.log("PWA ativado"))
       .catch(err => console.log("Erro PWA:", err));
   });
@@ -829,7 +857,7 @@ if (respostaInput) {
 
 // Enter global (se o foco não estiver no input)
 document.addEventListener("keydown", (e) => {
-  if (aguardandoDecisao) return; // seu modal já trata Enter/Esc
+  if (aguardandoDecisao) return; // modal agora tem handler próprio
 
   if (!isEnterKey(e)) return;
   e.preventDefault();
@@ -838,7 +866,8 @@ document.addEventListener("keydown", (e) => {
 
   // se o foco não estiver no input, força foco
   if (document.activeElement !== respostaInput) {
-    respostaInput.focus();
+    // desktop only: no mobile isso fica desabilitado (disabled)
+    if (!respostaInput.disabled) respostaInput.focus();
   }
 
   const digitado = respostaInput.value;
