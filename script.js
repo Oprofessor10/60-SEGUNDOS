@@ -744,25 +744,23 @@ function ensureMobileInputMode() {
   if (!respostaInput) return;
 
   if (isMobileCoarse()) {
-    // 1) trava o teclado do celular de verdade
+    // trava teclado do celular
     respostaInput.setAttribute("readonly", "readonly");
-    respostaInput.setAttribute("inputmode", "none");  // impede teclado nativo
+    respostaInput.setAttribute("inputmode", "none");
     respostaInput.setAttribute("autocomplete", "off");
 
-    // IMPORTANTÍSSIMO: type number em alguns celulares abre teclado mesmo readonly
+    // força text no mobile para não abrir teclado numérico
     if (respostaInput.type !== "text") respostaInput.type = "text";
 
-    // 2) mostra o teclado virtual
+    // mostra teclado virtual
     showKeypad();
 
-    // 3) se tentar focar, não deixa abrir teclado nativo
     if (!inputFocusHooked) {
       respostaInput.addEventListener("focus", () => {
         respostaInput.blur();
         showKeypad();
       });
 
-      // toque no input: não abre teclado nativo, só abre o keypad
       respostaInput.addEventListener("pointerdown", (e) => {
         e.preventDefault();
         respostaInput.blur();
@@ -772,16 +770,19 @@ function ensureMobileInputMode() {
       inputFocusHooked = true;
     }
 
-    // garante que não fica “focado” ao girar a tela
     respostaInput.blur();
   } else {
     // desktop normal
     respostaInput.removeAttribute("readonly");
     respostaInput.setAttribute("inputmode", "numeric");
+
+    // volta o type para number no desktop
     if (respostaInput.type !== "number") respostaInput.type = "number";
+
     hideKeypad();
   }
 }
+
 
 
 function keypadAppend(d) {
@@ -840,6 +841,7 @@ if (keypad) {
 // liga/desliga quando gira a tela
 window.addEventListener("resize", ensureMobileInputMode);
 ensureMobileInputMode();
+
 
 
 
