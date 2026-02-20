@@ -1089,3 +1089,21 @@ body.keypad-on .tabuleiro{
   color: #555 !important;           /* cinza médio (mais visível) */
   opacity: 1 !important;            /* garante que não fique apagado */
 }
+
+/* =========================================================
+   FIX PC: fogos (canvas) sempre na frente do jogo
+   mas ainda abaixo do modal
+========================================================= */
+@media (min-width: 901px){
+  #fxCanvas{
+    z-index: 9500 !important; /* acima do tabuleiro e mensagens */
+  }
+
+  /* modal continua acima de tudo */
+  #modal{
+    z-index: 10000 !important;
+  }
+  #modal .modal-box{
+    z-index: 10001 !important;
+  }
+}
