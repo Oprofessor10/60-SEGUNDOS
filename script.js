@@ -377,12 +377,12 @@ function finalizarJogoTempo() {
       fxCanvas.style.position = "fixed";  // Fixa a imagem na tela
       fxCanvas.style.top = "0";
       fxCanvas.style.left = "0";
-      fxCanvas.style.width = "100%";
-      fxCanvas.style.height = "100%";
-      fxCanvas.style.zIndex = "1000";  // Garante que o GIF fique no fundo
+      fxCanvas.style.width = "100vw";  // Usa a largura total da tela
+      fxCanvas.style.height = "100vh";  // Usa a altura total da tela
+      fxCanvas.style.zIndex = "999";  // Garante que o GIF fique no fundo
     }
 
-    // Exibir o modal de confirmação (a mensagem ficará por cima da imagem)
+    // Exibir o modal de confirmação
     abrirModal(
       "Você perdeu!",
       "Quer tentar novamente?",
@@ -980,6 +980,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
