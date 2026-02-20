@@ -887,3 +887,16 @@ body.keypad-on .tabuleiro{
     padding-bottom: 180px !important;
   }
 }
+
+/* =========================================================
+   MOBILE: tabuleiro colado na tela (sem gap)
+   ========================================================= */
+@media (max-width: 900px){
+  .tabuleiro{
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    border-radius: 0 !important;  /* remove o filetinho nas bordas */
+    min-height: 100dvh !important;
+  }
+}
