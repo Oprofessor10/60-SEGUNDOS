@@ -355,8 +355,38 @@ function finalizarJogoTempo() {
   jogoAtivo = false;
   cronometroAtivo = false;
 
-  if (fimJogoDiv) {
-    fimJogoDiv.innerHTML = `⏰ TEMPO ESGOTADO <br> Pressione ENTER para reiniciar.`;
+  if (acertos < meta) {
+    // Mostra carta travada
+    virarParaFrente(cartaEsquerda);
+    virarParaFrente(cartaDireita);
+
+    // Exibe a mensagem de derrota
+    if (fimJogoDiv) {
+      fimJogoDiv.innerHTML = `
+        😢 Você perdeu! <br> Deseja tentar novamente? <br><br>
+        <b>ENTER = SIM</b> &nbsp; | &nbsp; <b>ESC = NÃO</b>
+      `;
+    }
+
+    // Envia a animação de choro (ou imagem qualquer)
+    // Você pode adicionar imagens GIF de choro ou algo relacionado aqui
+    if (fxCanvas) {
+      // Esta parte seria para algum efeito visual, por exemplo, "efeito de lágrimas"
+      // Ou GIF de choro, mas vamos deixar o visual simples por enquanto.
+      // Exemplo: fxCanvas.style.backgroundImage = "url('choro.gif')";
+    }
+
+    // Exibir o modal de confirmação
+    abrirModal(
+      "Você perdeu!",
+      "Quer tentar novamente?",
+      () => { resetTudoParaInicio(); }, // SIM
+      () => { resetTudoParaInicio(); }  // NÃO
+    );
+  } else {
+    if (fimJogoDiv) {
+      fimJogoDiv.innerHTML = `⏰ TEMPO ESGOTADO <br> Pressione ENTER para reiniciar.`;
+    }
   }
 
   if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
@@ -944,6 +974,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
