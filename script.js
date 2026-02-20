@@ -371,7 +371,8 @@ function finalizarJogoTempo() {
     // Envia a animação de choro (ou imagem qualquer)
     // Você pode adicionar imagens GIF de choro ou algo relacionado aqui
     if (fxCanvas) {
-  fxCanvas.style.backgroundImage = "url('choro.png')"; // Caminho do seu arquivo GIF
+  fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);  // Limpa o canvas
+  fxCanvas.style.backgroundImage = "url('choro.png')";
   fxCanvas.style.backgroundSize = "contain";
   fxCanvas.style.backgroundPosition = "center";
   fxCanvas.style.backgroundRepeat = "no-repeat";
@@ -975,6 +976,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
