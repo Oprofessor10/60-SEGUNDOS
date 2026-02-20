@@ -342,7 +342,7 @@ button, select, input{ touch-action: manipulation; }
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 5000;
+  z-index: 3000;
   mix-blend-mode: screen;
 }
 
