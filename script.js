@@ -401,7 +401,6 @@ function finalizarJogoTempo() {
   virarParaFrente(cartaDireita);
   if (numDireita) numDireita.textContent = "";
 }
-
 // =======================
 // MODAL
 // =======================
@@ -980,6 +979,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
