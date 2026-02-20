@@ -382,7 +382,7 @@ function finalizarJogoTempo() {
       fxCanvas.style.zIndex = "999";  // Garante que o GIF fique no fundo
     }
 
-    // Exibir o modal de confirmação
+    // Exibir o modal de confirmação sobre o GIF
     abrirModal(
       "Você perdeu!",
       "Quer tentar novamente?",
@@ -401,6 +401,7 @@ function finalizarJogoTempo() {
   virarParaFrente(cartaDireita);
   if (numDireita) numDireita.textContent = "";
 }
+
 // =======================
 // MODAL
 // =======================
@@ -979,6 +980,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
