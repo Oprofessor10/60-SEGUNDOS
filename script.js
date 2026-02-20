@@ -86,12 +86,8 @@ function hideKeypad() {
   setKeypadLayoutFlags();
 }
 
-// Foco seguro:
-// - No celular: NÃO focar input (senão abre teclado nativo), só mostra keypad
-// - No desktop: foca normal
 function focusRespostaSeguro() {
   if (!respostaInput) return;
-
   if (isMobileLike()) {
     respostaInput.blur();
     showKeypad();
@@ -100,19 +96,16 @@ function focusRespostaSeguro() {
   }
 }
 
-// evita adicionar listeners repetidos
 let inputHooks = false;
 
 function ensureMobileInputMode() {
   if (!respostaInput) return;
 
   if (isMobileLike()) {
-    // BLOQUEIA teclado nativo
     respostaInput.disabled = true;
     respostaInput.setAttribute("inputmode", "none");
     respostaInput.setAttribute("autocomplete", "off");
     if (respostaInput.type !== "text") respostaInput.type = "text";
-
     showKeypad();
 
     if (!inputHooks) {
@@ -126,7 +119,6 @@ function ensureMobileInputMode() {
       inputHooks = true;
     }
   } else {
-    // Desktop normal
     respostaInput.disabled = false;
     respostaInput.removeAttribute("readonly");
     respostaInput.setAttribute("inputmode", "numeric");
@@ -137,8 +129,6 @@ function ensureMobileInputMode() {
 
 // =======================
 // AUTO-INICIAR SEM CLICAR EM "INICIAR"
-// - PC: primeiro dígito digitado já inicia e entra no input
-// - Mobile: primeiro toque no keypad já inicia e entra no input
 // =======================
 function tabuadaSelecionadaValida() {
   return !!(tabuadaSelect && tabuadaSelect.value && tabuadaSelect.value !== "");
@@ -149,16 +139,15 @@ function autoStartIfNeeded() {
   if (jogoAtivo) return false;
   if (!tabuadaSelecionadaValida()) return false;
 
-  // inicia SEM disparar cronômetro (cronômetro só começa no verificar())
-  window.iniciarJogo(true);
+  window.iniciarJogo(true); // sem cronômetro (cronômetro só no verificar)
   return true;
 }
 
 // Digitação pelo keypad
 function keypadAppend(d) {
   if (!respostaInput) return;
+  if (aguardandoDecisao) return; // <- evita digitar com modal aberto
 
-  // se ainda não iniciou, inicia ao primeiro toque
   autoStartIfNeeded();
 
   const s = (respostaInput.value || "").toString();
@@ -170,18 +159,20 @@ function keypadAppend(d) {
 
 function keypadBackspace() {
   if (!respostaInput) return;
+  if (aguardandoDecisao) return;
   const s = (respostaInput.value || "").toString();
   respostaInput.value = s.slice(0, -1);
 }
 
 function keypadClear() {
   if (!respostaInput) return;
+  if (aguardandoDecisao) return;
   respostaInput.value = "";
 }
 
 function keypadOk() {
   if (aguardandoDecisao) {
-    confirmarSim(); // ENTER/OK = SIM
+    confirmarSim(); // OK = SIM
     return;
   }
   verificar();
@@ -227,7 +218,7 @@ function virarParaVersoComNumero(carta, numeroDiv, valor) {
 }
 
 // =======================
-// LABEL FIXA (TABUADA DO X)
+// LABEL FIXA
 // =======================
 function atualizarLabelTabuada() {
   if (!labelTabuada) return;
@@ -237,7 +228,7 @@ function atualizarLabelTabuada() {
 }
 
 // =======================
-// PILHA DIREITA (MONTE)
+// PILHA DIREITA
 // =======================
 function setPilhaDireita(remaining) {
   const rest = Math.max(0, Number(remaining || 0));
@@ -364,7 +355,7 @@ function finalizarJogoTempo() {
 }
 
 // =======================
-// MODAL / FALLBACK
+// MODAL
 // =======================
 let onSim = null;
 let onNao = null;
@@ -373,6 +364,9 @@ function abrirModal(titulo, textoHtml, simCb, naoCb) {
   aguardandoDecisao = true;
   onSim = simCb;
   onNao = naoCb;
+
+  // opcional: esconde keypad enquanto decide (fica mais limpo no celular)
+  if (isMobileLike()) hideKeypad();
 
   if (modal && modalTitulo && modalTexto) {
     modalTitulo.textContent = titulo;
@@ -383,7 +377,7 @@ function abrirModal(titulo, textoHtml, simCb, naoCb) {
   }
 
   if (fimJogoDiv) {
-    fimJogoDiv.innerHTML = `${titulo}<br>${textoHtml}<br><br>ENTER = SIM`;
+    fimJogoDiv.innerHTML = `${titulo}<br>${textoHtml}<br><br>ENTER = SIM | ESC = NÃO`;
   }
 }
 
@@ -394,6 +388,9 @@ function fecharModal() {
   aguardandoDecisao = false;
   onSim = null;
   onNao = null;
+
+  // volta keypad se estiver em mobile
+  if (isMobileLike()) showKeypad();
 }
 
 function confirmarSim() {
@@ -419,7 +416,18 @@ if (btnNao) btnNao.addEventListener("click", (e) => {
   confirmarNao();
 });
 
-// ENTER = SIM (principal). ESC continua como "Não" (extra)
+// =======================
+// ENTER / ESC (Modal)
+// =======================
+function isEnterKey(e){
+  return (
+    e.key === "Enter" ||
+    e.code === "Enter" ||
+    e.code === "NumpadEnter" ||
+    e.keyCode === 13
+  );
+}
+
 document.addEventListener("keydown", (e) => {
   if (!aguardandoDecisao) return;
 
@@ -466,7 +474,7 @@ function fanfarraGrande(){
 }
 
 // =======================
-// FX (Fogos tipo virada de ano)
+// FX
 // =======================
 let particles = [];
 let rockets = [];
@@ -487,7 +495,6 @@ function rand(min, max){ return Math.random() * (max - min) + min; }
 
 function spawnRocket() {
   if (!fxCanvas) return;
-
   const x = rand(window.innerWidth * 0.15, window.innerWidth * 0.85);
   const y = window.innerHeight + 10;
 
@@ -593,8 +600,7 @@ function fogosGrandes(){
 }
 
 // =======================
-// TABUADA SELECT: mostra tabuada × 1 (sem tempo)
-// e já deixa pronto para resposta (sem precisar iniciar)
+// TABUADA SELECT
 // =======================
 if (tabuadaSelect) {
   tabuadaSelect.addEventListener("change", () => {
@@ -619,13 +625,12 @@ if (tabuadaSelect) {
     virarParaVersoComNumero(cartaEsquerda, numEsquerda, tabuada);
     virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
 
-    // já posiciona para responder (sem iniciar cronômetro)
     focusRespostaSeguro();
   });
 }
 
 // =======================
-// INICIAR (global por causa do onclick)
+// INICIAR
 // =======================
 window.iniciarJogo = function iniciarJogo(preservarDigitado = false) {
   syncFaseEMeta();
@@ -669,9 +674,14 @@ function proximoNumero() {
 }
 
 // =======================
-// TRANSIÇÕES DE META
+// TRANSIÇÕES
 // =======================
 function iniciarDesafioAleatorio() {
+  // agora só inicia DEPOIS do SIM
+  jogoAtivo = true;
+  cronometroAtivo = false;
+  clearInterval(intervalo);
+
   etapa = "aleatorio";
 
   if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
@@ -695,6 +705,11 @@ function iniciarDesafioAleatorio() {
 }
 
 function avancarParaProximaTabuadaOuFase() {
+  // também só inicia DEPOIS do SIM
+  jogoAtivo = true;
+  cronometroAtivo = false;
+  clearInterval(intervalo);
+
   tabuadaAtual++;
 
   if (tabuadaAtual > 10) {
@@ -746,14 +761,20 @@ function avancarParaProximaTabuadaOuFase() {
   virarParaVersoComNumero(cartaEsquerda, numEsquerda, tabuada);
   virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
 
-  jogoAtivo = true;
-  cronometroAtivo = false;
-  clearInterval(intervalo);
-
   if (respostaInput) {
     respostaInput.value = "";
     focusRespostaSeguro();
   }
+}
+
+// =======================
+// BATEU META (AGORA NÃO INICIA AUTOMÁTICO)
+// =======================
+function pausarParaDecisao() {
+  // pausa geral do jogo, aguardando decisão do modal
+  jogoAtivo = false;
+  cronometroAtivo = false;
+  clearInterval(intervalo);
 }
 
 function bateuMetaNormal() {
@@ -761,12 +782,11 @@ function bateuMetaNormal() {
   if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
 
   fogosMedios();
-  clearInterval(intervalo);
-  cronometroAtivo = false;
+  pausarParaDecisao();
 
   abrirModal(
     "🎉 Parabéns!",
-    `Você passou a fase!<br>Quer continuar? <b>(ENTER = SIM)</b>`,
+    `Você passou a fase!<br><b>Deseja continuar?</b>`,
     () => { iniciarDesafioAleatorio(); },
     () => { resetTudoParaInicio(); }
   );
@@ -777,12 +797,11 @@ function bateuMetaAleatorio() {
   if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
 
   fogosGrandes();
-  clearInterval(intervalo);
-  cronometroAtivo = false;
+  pausarParaDecisao();
 
   abrirModal(
-    "🚀 Você subiu de nível!",
-    "Quer continuar? <b>(ENTER = SIM)</b>",
+    "💪 Você é demais!",
+    `<b>Vamos para a próxima tabuada?</b>`,
     () => { avancarParaProximaTabuadaOuFase(); },
     () => { resetTudoParaInicio(); }
   );
@@ -799,7 +818,7 @@ function verificar() {
   const valor = respostaInput.value;
   if (valor === "") return;
 
-  // cronômetro SÓ começa aqui (1ª resposta enviada)
+  // cronômetro só começa na 1ª resposta enviada
   if (!cronometroAtivo) iniciarCronometro();
 
   const resposta = Number(valor);
@@ -834,27 +853,16 @@ if ("serviceWorker" in navigator) {
 }
 
 // =======================
-// ENTER GARANTIDO (desktop)
+// PC: PRIMEIRO DÍGITO INICIA
 // =======================
-function isEnterKey(e){
-  return (
-    e.key === "Enter" ||
-    e.code === "Enter" ||
-    e.code === "NumpadEnter" ||
-    e.keyCode === 13
-  );
-}
-
-// PC: primeiro dígito já inicia e coloca o número no input
 document.addEventListener("keydown", (e) => {
   if (aguardandoDecisao) return;
-  if (isMobileLike()) return; // mobile usa keypad
+  if (isMobileLike()) return;
   if (!respostaInput || respostaInput.disabled) return;
 
   const isDigit = /^[0-9]$/.test(e.key);
   if (!isDigit) return;
 
-  // inicia ao primeiro dígito
   if (!jogoAtivo && tabuadaSelecionadaValida()) {
     e.preventDefault();
     window.iniciarJogo(true);
@@ -863,13 +871,12 @@ document.addEventListener("keydown", (e) => {
   }
 }, { passive: false });
 
-// Enter dentro do input SEMPRE envia
+// Enter no input = enviar
 if (respostaInput) {
   respostaInput.addEventListener("keydown", (e) => {
     if (!isEnterKey(e)) return;
     e.preventDefault();
 
-    // se ainda não iniciou, inicia e preserva o digitado
     const digitado = respostaInput.value;
     if (!jogoAtivo) {
       if (!tabuadaSelecionadaValida()) return;
@@ -881,13 +888,12 @@ if (respostaInput) {
   }, { passive: false });
 }
 
-// Enter global (se o foco não estiver no input)
+// Enter global (fora do input)
 document.addEventListener("keydown", (e) => {
   if (aguardandoDecisao) return;
-
   if (!isEnterKey(e)) return;
-  e.preventDefault();
 
+  e.preventDefault();
   if (!respostaInput) return;
 
   if (!respostaInput.disabled && document.activeElement !== respostaInput) {
@@ -903,6 +909,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
