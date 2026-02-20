@@ -847,7 +847,11 @@ function verificar() {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./service-worker.js")
-      .then(() => console.log("PWA ativado"))
+      .then((reg) => {
+        console.log("PWA ativado");
+        // força buscar versão nova do SW/script
+        reg.update();
+      })
       .catch(err => console.log("Erro PWA:", err));
   });
 }
@@ -909,6 +913,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
