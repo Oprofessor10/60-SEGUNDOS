@@ -779,31 +779,41 @@ function pausarParaDecisao() {
 
 function bateuMetaNormal() {
   setPilhaDireita(0);
-  if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
 
   fogosMedios();
-  pausarParaDecisao();
+  clearInterval(intervalo);
+  cronometroAtivo = false;
+  jogoAtivo = false; // 🔴 IMPORTANTE: trava o jogo aqui
 
   abrirModal(
     "🎉 Parabéns!",
-    `Você passou a fase!<br><b>Deseja continuar?</b>`,
-    () => { iniciarDesafioAleatorio(); },
-    () => { resetTudoParaInicio(); }
+    "Deseja continuar para o desafio aleatório?",
+    () => {
+      iniciarDesafioAleatorio();
+    },
+    () => {
+      resetTudoParaInicio();
+    }
   );
 }
 
 function bateuMetaAleatorio() {
   setPilhaDireita(0);
-  if (pilhaZerouMsg) pilhaZerouMsg.classList.add("hidden");
 
   fogosGrandes();
-  pausarParaDecisao();
+  clearInterval(intervalo);
+  cronometroAtivo = false;
+  jogoAtivo = false; // 🔴 trava aqui também
 
   abrirModal(
-    "💪 Você é demais!",
-    `<b>Vamos para a próxima tabuada?</b>`,
-    () => { avancarParaProximaTabuadaOuFase(); },
-    () => { resetTudoParaInicio(); }
+    "🚀 Você é demais!",
+    "Vamos para a próxima tabuada?",
+    () => {
+      avancarParaProximaTabuadaOuFase();
+    },
+    () => {
+      resetTudoParaInicio();
+    }
   );
 }
 
@@ -913,6 +923,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
