@@ -1004,3 +1004,22 @@ body.keypad-on .tabuleiro{
     max-width: none !important;
   }
 }
+
+/* =========================================================
+   INPUT RESPOSTA - MELHOR VISUAL (mobile retrato)
+========================================================= */
+@media (max-width: 900px){
+
+  .resposta-area input{
+    background: #0d0f12 !important;   /* preto suave */
+    color: #ffffff !important;        /* texto branco */
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+    box-shadow: 0 0 0 2px rgba(0,255,136,0.4);
+  }
+
+  .resposta-area input::placeholder{
+    color: rgba(255,255,255,0.6);
+  }
+
+}
