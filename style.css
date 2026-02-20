@@ -804,3 +804,43 @@ body.keypad-on .tabuleiro{
   position: relative;
   z-index: 10001 !important;
 }
+
+/* =========================================================
+   FIX MOBILE: resposta sempre aparece (sem rolar)
+   - Evita a área das cartas "empurrar" a resposta para fora
+   - Quando teclado virtual está ON, reduz cartas um pouco
+   - NÃO altera PC
+========================================================= */
+
+@media (max-width: 900px){
+  /* a grade das cartas não pode crescer e empurrar o input */
+  .area-cartas{
+    flex: 0 !important;
+  }
+
+  /* a área de resposta vai para o "fim" do flex e fica visível */
+  .resposta-area{
+    margin-top: auto !important;
+  }
+
+  /* não precisa de um padding-bottom gigante (isso estava forçando rolagem) */
+  body.keypad-on .tabuleiro{
+    padding-bottom: 16px !important;
+  }
+}
+
+/* retrato: quando teclado aparece, encolhe um pouco as cartas pra caber tudo */
+@media (max-width: 900px) and (orientation: portrait){
+  body.keypad-on{
+    --cardW: min(38vw, 160px);
+    --xW: min(12vw, 54px);
+  }
+}
+
+/* landscape: quando teclado aparece, encolhe mais ainda (altura é menor) */
+@media (max-width: 900px) and (orientation: landscape){
+  body.keypad-on{
+    --cardW: min(22vh, 130px);
+    --xW: min(8vh, 38px);
+  }
+}
