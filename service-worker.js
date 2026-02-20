@@ -1,4 +1,4 @@
-const CACHE_NAME = "60-segundos-v103"; // <-- aumentei de novo pra forçar o PC
+const CACHE_NAME = "60-segundos-v104"; // <-- aumentei de novo pra forçar o PC
 
 const urlsToCache = [
   "./",
@@ -74,6 +74,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(req).then((cached) => cached || fetch(req))
   );
 });
+
 
 
 
