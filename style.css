@@ -900,3 +900,79 @@ body.keypad-on .tabuleiro{
     min-height: 100dvh !important;
   }
 }
+
+/* =========================================================
+   TECLADO MENOR (mobile) — sem afetar PC
+========================================================= */
+@media (max-width: 900px){
+  .keypad{
+    width: min(460px, 94vw) !important;
+    padding: 8px !important;
+    border-radius: 16px !important;
+  }
+  .kp{
+    padding: 12px 0 !important;
+    font-size: 18px !important;
+    border-radius: 12px !important;
+  }
+  .keypad-row{ gap: 8px !important; margin-bottom: 8px !important; }
+}
+
+/* deitado: ainda menor */
+@media (max-width: 900px) and (orientation: landscape){
+  .keypad{
+    width: min(380px, 42vw) !important;
+    padding: 6px !important;
+  }
+  .kp{
+    padding: 9px 0 !important;
+    font-size: 16px !important;
+  }
+  .keypad-row{ gap: 6px !important; margin-bottom: 6px !important; }
+}
+
+/* =========================================================
+   BARRA DE RESPOSTA FIXA acima do teclado (mobile)
+========================================================= */
+@media (max-width: 900px){
+  body.keypad-on{
+    --kpH: 240px; /* altura aproximada do teclado (retrato) */
+  }
+
+  /* a barra fica sempre visível */
+  body.keypad-on .resposta-area{
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: calc(var(--kpH) + 10px + env(safe-area-inset-bottom)) !important;
+    z-index: 7000 !important;
+    margin: 0 !important;
+    padding: 0 12px !important;
+  }
+
+  body.keypad-on .resposta-area input{
+    width: min(360px, 92vw) !important;
+    margin: 0 auto !important;
+    display: block !important;
+  }
+
+  /* evita o conteúdo ficar escondido atrás do teclado */
+  body.keypad-on .tabuleiro{
+    padding-bottom: calc(var(--kpH) + 90px) !important;
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape){
+  body.keypad-on{
+    --kpH: 170px; /* teclado menor no deitado */
+  }
+}
+
+@media (max-width: 900px) and (orientation: landscape){
+  body.keypad-on .tabuleiro{
+    padding-right: min(44vw, 390px) !important;
+  }
+  body.keypad-on .keypad{
+    right: max(8px, env(safe-area-inset-right)) !important;
+  }
+}
