@@ -776,3 +776,31 @@ body.keypad-on .tabuleiro{
 #modal .modal-box{
   z-index: 10001 !important;
 }
+
+/* =========================
+   CORREÇÃO FINAL: fogos na frente + modal acima de tudo
+========================= */
+
+/* fogos (canvas) volta para frente */
+#fxCanvas{
+  z-index: 5000 !important;
+}
+
+/* teclado (mobile) pode ficar acima do canvas */
+.keypad{
+  z-index: 6000 !important;
+}
+
+/* mensagem backup (PC) acima do canvas e do teclado */
+.fim-jogo{
+  z-index: 9000 !important;
+}
+
+/* modal sempre acima de TUDO */
+#modal{
+  z-index: 10000 !important;
+}
+#modal .modal-box{
+  position: relative;
+  z-index: 10001 !important;
+}
