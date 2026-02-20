@@ -377,6 +377,7 @@ function abrirModal(titulo, textoHtml, simCb, naoCb) {
     modalTexto.innerHTML = textoHtml;
     modal.classList.remove("hidden");
     if (btnSim) btnSim.focus();
+    return;
   }
 }
 
@@ -912,6 +913,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
