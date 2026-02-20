@@ -869,3 +869,21 @@ body.keypad-on .tabuleiro{
     font-size: clamp(40px, 12vh, 90px) !important;
   }
 }
+
+/* =========================================================
+   MOBILE: garantir que a barra de resposta apareça com o teclado
+   ========================================================= */
+
+/* quando o teclado virtual está ligado, devolve espaço embaixo */
+@media (max-width: 900px){
+  body.keypad-on .tabuleiro{
+    padding-bottom: 320px !important;  /* retrato (altura do teclado) */
+  }
+}
+
+/* no landscape o teclado é menor */
+@media (max-width: 900px) and (orientation: landscape){
+  body.keypad-on .tabuleiro{
+    padding-bottom: 180px !important;
+  }
+}
