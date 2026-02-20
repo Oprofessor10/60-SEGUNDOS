@@ -157,6 +157,7 @@ function keypadAppend(d) {
 
   if (s === "0") respostaInput.value = String(d);
   else respostaInput.value = s + String(d);
+  atualizarPlaceholder();
 }
 
 function keypadBackspace() {
@@ -164,12 +165,14 @@ function keypadBackspace() {
   if (aguardandoDecisao) return;
   const s = (respostaInput.value || "").toString();
   respostaInput.value = s.slice(0, -1);
+  atualizarPlaceholder();
 }
 
 function keypadClear() {
   if (!respostaInput) return;
   if (aguardandoDecisao) return;
   respostaInput.value = "";
+  atualizarPlaceholder();
 }
 
 function keypadOk() {
@@ -195,6 +198,13 @@ if (keypad) {
     if (k === "ok") return keypadOk();
     keypadAppend(k);
   });
+}
+
+function atualizarPlaceholder() {
+  if (!respostaInput) return;
+  respostaInput.placeholder = (respostaInput.value && respostaInput.value.length > 0)
+    ? ""
+    : "Digite a resposta";
 }
 
 window.addEventListener("resize", () => {
@@ -669,9 +679,10 @@ window.iniciarJogo = function iniciarJogo(preservarDigitado = false) {
   virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
 
   if (respostaInput) {
-    if (!preservarDigitado) respostaInput.value = "";
-    focusRespostaSeguro();
-  }
+  if (!preservarDigitado) respostaInput.value = "";
+  atualizarPlaceholder();   // 🔥 AQUI
+  focusRespostaSeguro();
+}
 };
 
 // =======================
@@ -847,6 +858,7 @@ function verificar() {
   else erros++;
 
   respostaInput.value = "";
+  atualizarPlaceholder();
   atualizarPainel();
 
   if (acertos >= meta) {
@@ -932,6 +944,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
