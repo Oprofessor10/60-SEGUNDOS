@@ -714,3 +714,34 @@ button, select, input{ touch-action: manipulation; }
   -webkit-text-fill-color: #000;
   color: #000;
 }
+
+/* =========================
+   AJUSTE: quando teclado virtual aparece,
+   não esconder cartas nem a área de resposta
+========================= */
+body.keypad-on .tabuleiro{
+  /* dá espaço para o teclado sem cobrir o jogo */
+  padding-bottom: 280px !important;
+}
+
+/* retrato: espaço um pouco maior (teclado ocupa mais) */
+@media (max-width: 900px) and (orientation: portrait){
+  body.keypad-on .tabuleiro{ padding-bottom: 320px !important; }
+}
+
+/* landscape: teclado vai para a DIREITA e o tabuleiro ganha espaço lateral */
+@media (max-width: 900px) and (orientation: landscape){
+  body.keypad-on .tabuleiro{
+    padding-bottom: 140px !important;  /* menos embaixo */
+    padding-right: 46vw !important;    /* abre espaço do lado pro teclado */
+  }
+
+  .keypad{
+    left: auto !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    transform: none !important;
+
+    width: min(44vw, 520px) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+}
