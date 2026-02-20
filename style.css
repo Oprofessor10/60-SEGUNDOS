@@ -1103,6 +1103,17 @@ body.keypad-on .tabuleiro{
   #modal{
     z-index: 10000 !important;
   }
+
+   /* =========================================================
+   FIX PC (FORÇADO): fogos sempre na frente de tudo
+   - não atrapalha cliques (canvas tem pointer-events: none)
+========================================================= */
+@media (min-width: 901px){
+  #fxCanvas{
+    z-index: 20000 !important;
+    pointer-events: none !important;
+  }
+}
   #modal .modal-box{
     z-index: 10001 !important;
   }
