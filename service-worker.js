@@ -1,10 +1,10 @@
-const CACHE_NAME = "60-segundos-v102"; // <-- aumentei para forçar atualizar
+const CACHE_NAME = "60-segundos-v103"; // <-- aumentei de novo pra forçar o PC
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
-  "./script.js",
+  "./script.js?v=103",   // <-- igual ao index.html
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
@@ -29,9 +29,49 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// ✅ Network-first para JS/CSS/HTML (pra nunca “prender” versão antiga no PC)
+// ✅ Cache-first para imagens (mais rápido)
 self.addEventListener("fetch", (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  const isSameOrigin = url.origin === location.origin;
+  const isAsset =
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css") ||
+    url.pathname.endsWith(".html") ||
+    url.pathname.endsWith(".json") ||
+    url.search.includes("v=");
+
+  const isImage =
+    url.pathname.endsWith(".png") ||
+    url.pathname.endsWith(".jpg") ||
+    url.pathname.endsWith(".jpeg") ||
+    url.pathname.endsWith(".webp");
+
+  if (isSameOrigin && isAsset) {
+    event.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  if (isSameOrigin && isImage) {
+    event.respondWith(
+      caches.match(req).then((cached) => cached || fetch(req))
+    );
+    return;
+  }
+
+  // padrão
   event.respondWith(
-    caches.match(event.request).then((res) => res || fetch(event.request))
+    caches.match(req).then((cached) => cached || fetch(req))
   );
 });
 
