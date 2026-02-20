@@ -60,29 +60,30 @@ const fxCtx = fxCanvas ? fxCanvas.getContext("2d") : null;
 // =======================
 const keypad = document.getElementById("keypad");
 
-/**
- * CORREÇÃO:
- * Antes você usava "largura <= 900" para decidir mobile, isso desativava teclado no PC
- * quando a janela ficava menor, e o ENTER parava.
- *
- * Agora: mobile só se for touch/coarse pointer.
- */
 function isMobileLike() {
   const byPointer = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
   const byTouch = ("ontouchstart" in window) || (navigator.maxTouchPoints > 0);
   return byPointer || byTouch;
 }
 
+function setKeypadLayoutFlags() {
+  document.body.classList.toggle("is-mobile", isMobileLike());
+}
+
 function showKeypad() {
   if (!keypad) return;
   keypad.classList.remove("hidden");
   keypad.setAttribute("aria-hidden", "false");
+  document.body.classList.add("keypad-on");
+  setKeypadLayoutFlags();
 }
 
 function hideKeypad() {
   if (!keypad) return;
   keypad.classList.add("hidden");
   keypad.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("keypad-on");
+  setKeypadLayoutFlags();
 }
 
 // Foco seguro:
@@ -115,7 +116,6 @@ function ensureMobileInputMode() {
     showKeypad();
 
     if (!inputHooks) {
-      // toque no input só abre o keypad (não abre teclado nativo)
       const block = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -123,7 +123,6 @@ function ensureMobileInputMode() {
       };
       respostaInput.addEventListener("touchstart", block, { passive: false });
       respostaInput.addEventListener("click", block);
-
       inputHooks = true;
     }
   } else {
@@ -136,13 +135,33 @@ function ensureMobileInputMode() {
   }
 }
 
+// =======================
+// AUTO-INICIAR SEM CLICAR EM "INICIAR"
+// - PC: primeiro dígito digitado já inicia e entra no input
+// - Mobile: primeiro toque no keypad já inicia e entra no input
+// =======================
+function tabuadaSelecionadaValida() {
+  return !!(tabuadaSelect && tabuadaSelect.value && tabuadaSelect.value !== "");
+}
+
+function autoStartIfNeeded() {
+  if (aguardandoDecisao) return false;
+  if (jogoAtivo) return false;
+  if (!tabuadaSelecionadaValida()) return false;
+
+  // inicia SEM disparar cronômetro (cronômetro só começa no verificar())
+  window.iniciarJogo(true);
+  return true;
+}
 
 // Digitação pelo keypad
 function keypadAppend(d) {
   if (!respostaInput) return;
-  const s = (respostaInput.value || "").toString();
 
-  // evita números gigantes
+  // se ainda não iniciou, inicia ao primeiro toque
+  autoStartIfNeeded();
+
+  const s = (respostaInput.value || "").toString();
   if (s.length >= 4) return;
 
   if (s === "0") respostaInput.value = String(d);
@@ -162,7 +181,7 @@ function keypadClear() {
 
 function keypadOk() {
   if (aguardandoDecisao) {
-    confirmarSim();
+    confirmarSim(); // ENTER/OK = SIM
     return;
   }
   verificar();
@@ -185,8 +204,12 @@ if (keypad) {
   });
 }
 
-window.addEventListener("resize", ensureMobileInputMode);
+window.addEventListener("resize", () => {
+  ensureMobileInputMode();
+  setKeypadLayoutFlags();
+});
 ensureMobileInputMode();
+setKeypadLayoutFlags();
 
 // =======================
 // CARTAS
@@ -208,16 +231,9 @@ function virarParaVersoComNumero(carta, numeroDiv, valor) {
 // =======================
 function atualizarLabelTabuada() {
   if (!labelTabuada) return;
-
   const v = tabuadaSelect ? tabuadaSelect.value : "";
-  if (v === "") {
-    labelTabuada.textContent = "";
-    return;
-  }
-
-  // CORREÇÃO: garante que o label reflete o valor selecionado
-  const t = Number(v);
-  labelTabuada.textContent = `Tabuada do ${t}`;
+  if (v === "") { labelTabuada.textContent = ""; return; }
+  labelTabuada.textContent = `Tabuada do ${Number(v)}`;
 }
 
 // =======================
@@ -227,7 +243,6 @@ function setPilhaDireita(remaining) {
   const rest = Math.max(0, Number(remaining || 0));
 
   if (contadorCartas) contadorCartas.textContent = String(rest);
-
   if (pilhaDireita) pilhaDireita.style.setProperty("--stack", String(rest));
 
   if (rest <= 0) {
@@ -277,7 +292,6 @@ function atualizarPainel() {
   if (tempoSpan) tempoSpan.textContent = String(tempo);
   if (acertosSpan) acertosSpan.textContent = String(acertos);
   if (errosSpan) errosSpan.textContent = String(erros);
-
   atualizarPilhaPorMeta();
 }
 
@@ -369,7 +383,7 @@ function abrirModal(titulo, textoHtml, simCb, naoCb) {
   }
 
   if (fimJogoDiv) {
-    fimJogoDiv.innerHTML = `${titulo}<br>${textoHtml}<br><br>ENTER = SIM | ESC = NÃO`;
+    fimJogoDiv.innerHTML = `${titulo}<br>${textoHtml}<br><br>ENTER = SIM`;
   }
 }
 
@@ -405,18 +419,16 @@ if (btnNao) btnNao.addEventListener("click", (e) => {
   confirmarNao();
 });
 
-// CORREÇÃO: teclado físico no modal (ENTER = sim / ESC = não)
+// ENTER = SIM (principal). ESC continua como "Não" (extra)
 document.addEventListener("keydown", (e) => {
   if (!aguardandoDecisao) return;
 
-  // Enter
-  if (e.key === "Enter" || e.code === "Enter" || e.code === "NumpadEnter" || e.keyCode === 13) {
+  if (isEnterKey(e)) {
     e.preventDefault();
     confirmarSim();
     return;
   }
 
-  // Esc
   if (e.key === "Escape" || e.code === "Escape" || e.keyCode === 27) {
     e.preventDefault();
     confirmarNao();
@@ -572,20 +584,17 @@ animateFx();
 
 function fogosMedios(){
   fanfarraCurta();
-  for (let i = 0; i < 6; i++) {
-    setTimeout(spawnRocket, i * 140);
-  }
+  for (let i = 0; i < 6; i++) setTimeout(spawnRocket, i * 140);
 }
 
 function fogosGrandes(){
   fanfarraGrande();
-  for (let i = 0; i < 16; i++) {
-    setTimeout(spawnRocket, i * 95);
-  }
+  for (let i = 0; i < 16; i++) setTimeout(spawnRocket, i * 95);
 }
 
 // =======================
 // TABUADA SELECT: mostra tabuada × 1 (sem tempo)
+// e já deixa pronto para resposta (sem precisar iniciar)
 // =======================
 if (tabuadaSelect) {
   tabuadaSelect.addEventListener("change", () => {
@@ -610,6 +619,7 @@ if (tabuadaSelect) {
     virarParaVersoComNumero(cartaEsquerda, numEsquerda, tabuada);
     virarParaVersoComNumero(cartaDireita, numDireita, numeroAtual);
 
+    // já posiciona para responder (sem iniciar cronômetro)
     focusRespostaSeguro();
   });
 }
@@ -654,11 +664,8 @@ window.iniciarJogo = function iniciarJogo(preservarDigitado = false) {
 // PRÓXIMO NÚMERO
 // =======================
 function proximoNumero() {
-  if (etapa === "normal") {
-    numeroAtual = (numeroAtual < 10) ? (numeroAtual + 1) : 1;
-  } else {
-    numeroAtual = Math.floor(Math.random() * 10) + 1;
-  }
+  if (etapa === "normal") numeroAtual = (numeroAtual < 10) ? (numeroAtual + 1) : 1;
+  else numeroAtual = Math.floor(Math.random() * 10) + 1;
 }
 
 // =======================
@@ -758,8 +765,8 @@ function bateuMetaNormal() {
   cronometroAtivo = false;
 
   abrirModal(
-    "🎉 Você conseguiu!",
-    `Está pronto para o <b>próximo desafio</b>?`,
+    "🎉 Parabéns!",
+    `Você passou a fase!<br>Quer continuar? <b>(ENTER = SIM)</b>`,
     () => { iniciarDesafioAleatorio(); },
     () => { resetTudoParaInicio(); }
   );
@@ -775,7 +782,7 @@ function bateuMetaAleatorio() {
 
   abrirModal(
     "🚀 Você subiu de nível!",
-    "Vamos começar a próxima etapa?",
+    "Quer continuar? <b>(ENTER = SIM)</b>",
     () => { avancarParaProximaTabuadaOuFase(); },
     () => { resetTudoParaInicio(); }
   );
@@ -792,6 +799,7 @@ function verificar() {
   const valor = respostaInput.value;
   if (valor === "") return;
 
+  // cronômetro SÓ começa aqui (1ª resposta enviada)
   if (!cronometroAtivo) iniciarCronometro();
 
   const resposta = Number(valor);
@@ -819,7 +827,6 @@ function verificar() {
 // =======================
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    // CORREÇÃO: removeu o ';' que quebrava o .then()
     navigator.serviceWorker.register("./service-worker.js")
       .then(() => console.log("PWA ativado"))
       .catch(err => console.log("Erro PWA:", err));
@@ -838,6 +845,24 @@ function isEnterKey(e){
   );
 }
 
+// PC: primeiro dígito já inicia e coloca o número no input
+document.addEventListener("keydown", (e) => {
+  if (aguardandoDecisao) return;
+  if (isMobileLike()) return; // mobile usa keypad
+  if (!respostaInput || respostaInput.disabled) return;
+
+  const isDigit = /^[0-9]$/.test(e.key);
+  if (!isDigit) return;
+
+  // inicia ao primeiro dígito
+  if (!jogoAtivo && tabuadaSelecionadaValida()) {
+    e.preventDefault();
+    window.iniciarJogo(true);
+    respostaInput.value = e.key;
+    respostaInput.focus();
+  }
+}, { passive: false });
+
 // Enter dentro do input SEMPRE envia
 if (respostaInput) {
   respostaInput.addEventListener("keydown", (e) => {
@@ -847,6 +872,7 @@ if (respostaInput) {
     // se ainda não iniciou, inicia e preserva o digitado
     const digitado = respostaInput.value;
     if (!jogoAtivo) {
+      if (!tabuadaSelecionadaValida()) return;
       window.iniciarJogo(true);
       respostaInput.value = digitado;
     }
@@ -857,27 +883,27 @@ if (respostaInput) {
 
 // Enter global (se o foco não estiver no input)
 document.addEventListener("keydown", (e) => {
-  if (aguardandoDecisao) return; // modal agora tem handler próprio
+  if (aguardandoDecisao) return;
 
   if (!isEnterKey(e)) return;
   e.preventDefault();
 
   if (!respostaInput) return;
 
-  // se o foco não estiver no input, força foco
-  if (document.activeElement !== respostaInput) {
-    // desktop only: no mobile isso fica desabilitado (disabled)
-    if (!respostaInput.disabled) respostaInput.focus();
+  if (!respostaInput.disabled && document.activeElement !== respostaInput) {
+    respostaInput.focus();
   }
 
   const digitado = respostaInput.value;
   if (!jogoAtivo) {
+    if (!tabuadaSelecionadaValida()) return;
     window.iniciarJogo(true);
     respostaInput.value = digitado;
   }
 
   verificar();
 }, { passive: false });
+
 
 
 
