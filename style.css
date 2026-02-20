@@ -844,3 +844,19 @@ body.keypad-on .tabuleiro{
     --xW: min(8vh, 38px);
   }
 }
+
+/* =========================================================
+   FIX MOBILE: fogos mais visíveis mesmo com modal aberto
+   - No PC mantém como está
+========================================================= */
+@media (max-width: 900px){
+  body.is-mobile #fxCanvas{
+    z-index: 10500 !important; /* acima do escurecimento do modal */
+  }
+  body.is-mobile #modal{
+    z-index: 10000 !important;
+  }
+  body.is-mobile .keypad{
+    z-index: 11000 !important; /* teclado segue acima de tudo */
+  }
+}
