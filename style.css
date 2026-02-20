@@ -1023,3 +1023,14 @@ body.keypad-on .tabuleiro{
   }
 
 }
+
+/* =========================================================
+   FIX: texto do input (mobile) — estava forçando preto no disabled
+========================================================= */
+@media (max-width: 900px){
+  #respostaInput:disabled{
+    -webkit-text-fill-color: #fff !important;
+    color: #fff !important;
+    caret-color: #fff !important;
+  }
+}
