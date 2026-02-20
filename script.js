@@ -362,23 +362,27 @@ function finalizarJogoTempo() {
 
     // Exibe a mensagem de derrota
     if (fimJogoDiv) {
-      fimJogoDiv.innerHTML = `
+      fimJogoDiv.innerHTML = ` 
         😢 Você perdeu! <br> Deseja tentar novamente? <br><br>
         <b>ENTER = SIM</b> &nbsp; | &nbsp; <b>ESC = NÃO</b>
       `;
     }
 
-    // Envia a animação de choro (ou imagem qualquer)
-    // Você pode adicionar imagens GIF de choro ou algo relacionado aqui
+    // Definir a imagem de fundo (GIF de choro)
     if (fxCanvas) {
-  fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);  // Limpa o canvas
-  fxCanvas.style.backgroundImage = "url('choro.png')";
-  fxCanvas.style.backgroundSize = "contain";
-  fxCanvas.style.backgroundPosition = "center";
-  fxCanvas.style.backgroundRepeat = "no-repeat";
-}
+      fxCanvas.style.backgroundImage = "url('choro.png')";  // Caminho do arquivo GIF
+      fxCanvas.style.backgroundSize = "contain";
+      fxCanvas.style.backgroundPosition = "center";
+      fxCanvas.style.backgroundRepeat = "no-repeat";
+      fxCanvas.style.position = "fixed";  // Fixa a imagem na tela
+      fxCanvas.style.top = "0";
+      fxCanvas.style.left = "0";
+      fxCanvas.style.width = "100%";
+      fxCanvas.style.height = "100%";
+      fxCanvas.style.zIndex = "1000";  // Garante que o GIF fique no fundo
+    }
 
-    // Exibir o modal de confirmação
+    // Exibir o modal de confirmação (a mensagem ficará por cima da imagem)
     abrirModal(
       "Você perdeu!",
       "Quer tentar novamente?",
@@ -976,6 +980,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
