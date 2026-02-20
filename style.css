@@ -1034,3 +1034,19 @@ body.keypad-on .tabuleiro{
     caret-color: #fff !important;
   }
 }
+
+/* =========================================================
+   INPUT RESPOSTA - estilo igual PC, só mais visível
+========================================================= */
+
+.resposta-area input{
+  background: #f2f2f2 !important;   /* cinza claro */
+  color: #000 !important;           /* número preto */
+  font-weight: 600;
+  border: 2px solid rgba(0,255,136,0.4);
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.resposta-area input::placeholder{
+  color: #777 !important;           /* cinza mais visível */
+}
