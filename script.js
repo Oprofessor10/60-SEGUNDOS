@@ -371,10 +371,11 @@ function finalizarJogoTempo() {
     // Envia a animação de choro (ou imagem qualquer)
     // Você pode adicionar imagens GIF de choro ou algo relacionado aqui
     if (fxCanvas) {
-      // Esta parte seria para algum efeito visual, por exemplo, "efeito de lágrimas"
-      // Ou GIF de choro, mas vamos deixar o visual simples por enquanto.
-      // Exemplo: fxCanvas.style.backgroundImage = "url('choro.gif')";
-    }
+  fxCanvas.style.backgroundImage = "url('choro.png')"; // Caminho do seu arquivo GIF
+  fxCanvas.style.backgroundSize = "contain";
+  fxCanvas.style.backgroundPosition = "center";
+  fxCanvas.style.backgroundRepeat = "no-repeat";
+}
 
     // Exibir o modal de confirmação
     abrirModal(
@@ -974,6 +975,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
