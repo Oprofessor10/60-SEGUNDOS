@@ -1,4 +1,4 @@
-const CACHE_NAME = "60-segundos-v101"; // mudei alto pra forçar trocar
+const CACHE_NAME = "60-segundos-v102"; // <-- aumentei para forçar atualizar
 
 const urlsToCache = [
   "./",
@@ -21,9 +21,11 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) =>
+        Promise.all(keys.map((k) => (k !== CACHE_NAME ? caches.delete(k) : null)))
+      )
+      .then(() => self.clients.claim())
   );
 });
 
@@ -32,6 +34,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(event.request).then((res) => res || fetch(event.request))
   );
 });
+
 
 
 
