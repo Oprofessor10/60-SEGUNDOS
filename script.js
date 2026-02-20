@@ -256,7 +256,7 @@ function atualizarPilhaPorMeta() {
 // META / FASE
 // =======================
 function setMetaByFase(f) {
-  if (f === "facil") return 20;
+  if (f === "facil") return 5;
   if (f === "media") return 40;
   return 60;
 }
@@ -932,6 +932,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
