@@ -860,3 +860,12 @@ body.keypad-on .tabuleiro{
     z-index: 11000 !important; /* teclado segue acima de tudo */
   }
 }
+
+/* =========================================================
+   FIX: número da carta proporcional no mobile DEITADO
+   ========================================================= */
+@media (max-width: 900px) and (orientation: landscape){
+  .numero{
+    font-size: clamp(40px, 12vh, 90px) !important;
+  }
+}
