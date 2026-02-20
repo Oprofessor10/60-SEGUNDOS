@@ -1062,6 +1062,29 @@ body.keypad-on .tabuleiro{
   font-weight: 600;
 }
 
+/* =========================================================
+   AJUSTE DEFINITIVO INPUT (mobile + PC)
+========================================================= */
+
+/* fundo claro padrão */
+.resposta-area input{
+  background: #e6e6e6 !important;   /* levemente mais escuro */
+  color: #000 !important;           /* texto digitado PRETO */
+  caret-color: #000 !important;     /* cursor preto */
+  font-weight: 600;
+}
+
+/* placeholder 30% mais escuro */
+.resposta-area input::placeholder{
+  color: #444 !important;           /* cinza mais escuro */
+  opacity: 1 !important;
+}
+
+/* GARANTE que no mobile (disabled) continue preto */
+#respostaInput:disabled{
+  -webkit-text-fill-color: #000 !important;
+  color: #000 !important;
+}
 .resposta-area input::placeholder{
   color: #555 !important;           /* cinza médio (mais visível) */
   opacity: 1 !important;            /* garante que não fique apagado */
