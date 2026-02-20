@@ -365,19 +365,18 @@ function abrirModal(titulo, textoHtml, simCb, naoCb) {
   onSim = simCb;
   onNao = naoCb;
 
-  // opcional: esconde keypad enquanto decide (fica mais limpo no celular)
-  if (isMobileLike()) hideKeypad();
+  // ✅ BACKUP: SEMPRE escreve no fimJogo (PC nunca fica sem ver)
+  if (fimJogoDiv) {
+    fimJogoDiv.innerHTML =
+      `${titulo}<br>${textoHtml}<br><br><b>ENTER = SIM</b> &nbsp; | &nbsp; <b>ESC = NÃO</b>`;
+  }
 
+  // Modal visual (se existir, ótimo — mas o backup já garante)
   if (modal && modalTitulo && modalTexto) {
     modalTitulo.textContent = titulo;
     modalTexto.innerHTML = textoHtml;
     modal.classList.remove("hidden");
     if (btnSim) btnSim.focus();
-    return;
-  }
-
-  if (fimJogoDiv) {
-    fimJogoDiv.innerHTML = `${titulo}<br>${textoHtml}<br><br>ENTER = SIM | ESC = NÃO`;
   }
 }
 
@@ -913,6 +912,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
