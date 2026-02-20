@@ -748,3 +748,31 @@ body.keypad-on .tabuleiro{
     bottom: max(10px, env(safe-area-inset-bottom)) !important;
   }
 }
+
+/* =========================
+   FIX PC: canvas não pode cobrir modal/mensagens
+========================= */
+
+/* 1) Canvas sempre atrás do jogo */
+#fxCanvas{
+  z-index: 0 !important;
+}
+
+/* 2) Tabuleiro e textos acima do canvas */
+.tabuleiro{
+  position: relative;
+  z-index: 10;
+}
+
+/* 3) Mensagem backup (fimJogo) bem acima */
+.fim-jogo{
+  z-index: 9990 !important;
+}
+
+/* 4) Modal acima de tudo */
+#modal{
+  z-index: 10000 !important;
+}
+#modal .modal-box{
+  z-index: 10001 !important;
+}
