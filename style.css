@@ -976,3 +976,31 @@ body.keypad-on .tabuleiro{
     right: max(8px, env(safe-area-inset-right)) !important;
   }
 }
+
+/* =========================================================
+   FIX FINAL (LANDSCAPE): barra de resposta no canto inferior esquerdo
+   - Evita subir e invadir os selects
+   - Funciona com teclado na direita
+========================================================= */
+@media (max-width: 900px) and (orientation: landscape){
+  /* não empurra pra cima no deitado */
+  body.keypad-on .tabuleiro{
+    padding-bottom: 12px !important; /* pequeno */
+  }
+
+  /* barra fixa embaixo, só no lado esquerdo (antes do teclado) */
+  body.keypad-on .resposta-area{
+    position: fixed !important;
+    left: 10px !important;
+    right: calc(min(44vw, 390px) + 16px) !important; /* espaço do teclado */
+    bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+    z-index: 7000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.keypad-on .resposta-area input{
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
