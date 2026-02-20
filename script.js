@@ -22,6 +22,8 @@ let aguardandoDecisao = false;
 let tabuadaAtual = 1;
 let faseAtual = "facil";
 
+let modalArmedAt = 0; // trava Enter logo após abrir modal
+
 // =======================
 // ELEMENTOS (com segurança)
 // =======================
@@ -361,6 +363,7 @@ let onSim = null;
 let onNao = null;
 
 function abrirModal(titulo, textoHtml, simCb, naoCb) {
+  modalArmedAt = performance.now() + 250; // 250ms sem aceitar Enter
   aguardandoDecisao = true;
   onSim = simCb;
   onNao = naoCb;
@@ -430,6 +433,12 @@ function isEnterKey(e){
 
 document.addEventListener("keydown", (e) => {
   if (!aguardandoDecisao) return;
+
+  // ✅ impede o ENTER que acabou de enviar a resposta de confirmar o modal
+  if (performance.now() < modalArmedAt) {
+    e.preventDefault();
+    return;
+  }
 
   if (isEnterKey(e)) {
     e.preventDefault();
@@ -923,6 +932,7 @@ document.addEventListener("keydown", (e) => {
 
   verificar();
 }, { passive: false });
+
 
 
 
